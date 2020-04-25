@@ -28,19 +28,6 @@ interface CanvasViewProps {
   articles: any[]
 }
 
-const createHex = (coords: Point) => {
-  const hex = {
-    coords: coords,
-    // right: false,
-    // left: false,
-    // bottomRight: false,
-    // bottomLeft: false,
-    // topRight: false,
-    // topLeft: false,
-  }
-  return hex
-}
-
 // Hex radius
 const hr = 200
 
@@ -89,17 +76,20 @@ const onHexLeave = (group: any) => {
   // shadow.remove()
 }
 
-const fadeIn = (x: number, y: number) => {
-  const h = new paper.Path.RegularPolygon(new paper.Point(x, y), 6, hr)
-  // h.position.x
+const createHex = (c: Point) => {
+  const h = new paper.Path.RegularPolygon(new paper.Point(c.x, c.y), 6, hr)
   h.fillColor = ('white' as unknown) as paper.Color // ??? wtf
+  h.onMouseEnter = () => onHexEnter(h)
+  h.onMouseLeave = () => onHexLeave(h)
+  fadeIn(h)
+}
+
+const fadeIn = (h: paper.Path.RegularPolygon) => {
   let tween = h.tweenTo(
     { fillColor: '#e9e9ff' },
     { duration: fadeInTime, start: false }
   )
   tween.start()
-  h.onMouseEnter = () => onHexEnter(h)
-  h.onMouseLeave = () => onHexLeave(h)
 }
 
 const spaceOnTheLeft = (hexs: Hexs, p: Point) => {
@@ -157,89 +147,39 @@ const setupDragging = (hexs: Hexs, limit: number) => {
 
     if (limit <= 0) return
     Object.values(hexs).forEach((p) => {
-      if (
-        spaceOnTheLeft(hexs, p)
-        // !hex.left &&
-        // !hexs[`${hex.coords.x - 2 * hr}:${hex.coords.y}`] &&
-        // hex.coords.x - hr - hg > 0 + paper.view.bounds.x
-      ) {
-        // const newHex = createHex({ x: hex.coords.x - 2 * hr, y: hex.coords.y })
-        // newHex.right = true
-        let x = p.x - 2 * hr
-        let y = p.y
-        hexs[`${x}:${y}`] = { x, y }
-        // hex.left = true
-        fadeIn(x, y)
+      if (spaceOnTheLeft(hexs, p)) {
+        const c = { x: p.x - 2 * hr, y: p.y }
+        hexs[`${c.x}:${c.y}`] = c
+        createHex(c)
         limit--
         // if (limit <= 0) return
-      } else if (
-        spaceOnTheRight(hexs, p)
-        // !hex.right &&
-        // !hexs[`${hex.coords.x + 2 * hr}:${hex.coords.y}`] &&
-        // hex.coords.x + hr + hg < CANVAS_WIDTH + paper.view.bounds.x
-      ) {
-        let x = p.x + 2 * hr
-        let y = p.y
-        // const newHex = createHex({ x: p.x + 2 * hr, y: p.y })
-        // newHex.left = true
-        hexs[`${x}:${y}`] = { x, y }
-        // hex.right = true
-        fadeIn(x, y)
+      } else if (spaceOnTheRight(hexs, p)) {
+        const c = { x: p.x + 2 * hr, y: p.y }
+        hexs[`${c.x}:${c.y}`] = c
+        createHex(c)
         limit--
         // if (limit <= 0) return
-      } else if (
-        spaceOnTheTopRight(hexs, p)
-        // !hex.topRight &&
-        // !hexs[`${hex.coords.x + hr}:${hex.coords.y - 1.75 * hr}`] &&
-        // hex.coords.x + hr + hg < CANVAS_WIDTH + paper.view.bounds.x &&
-        // hex.coords.y - hr - hg > 0 + paper.view.bounds.y
-      ) {
-        // const newHex = createHex({
-        //   x: hex.coords.x + hr,
-        //   y: hex.coords.y - 1.75 * hr,
-        // })
-        let x = p.x + hr
-        let y = p.y - 1.75 * hr
-        // newHex.bottomLeft = true
-        hexs[`${x}:${y}`] = { x, y }
-        // hex.topRight = true
-        fadeIn(x, y)
+      } else if (spaceOnTheTopRight(hexs, p)) {
+        const c = { x: p.x + hr, y: p.y - 1.75 * hr }
+        hexs[`${c.x}:${c.y}`] = c
+        createHex(c)
         limit--
         // if (limit <= 0) return
-      } else if (
-        spaceOnTheBottomRight(hexs, p)
-        // !hex.bottomRight &&
-        // !hexs[`${hex.coords.x + hr}:${hex.coords.y + 1.75 * hr}`] &&
-        // hex.coords.x + hr + hg < CANVAS_WIDTH + paper.view.bounds.x &&
-        // hex.coords.y + hr + hg < CANVAS_HEIGHT + paper.view.bounds.y
-      ) {
-        // const newHex = createHex({
-        //   x: hex.coords.x + hr,
-        //   y: hex.coords.y + 1.75 * hr,
-        // })
-        let x = p.x + hr
-        let y = p.y + 1.75 * hr
-        // newHex.topLeft = true
-        hexs[`${x}:${y}`] = { x, y }
-        // hex.bottomRight = true
-        fadeIn(x, y)
+      } else if (spaceOnTheBottomRight(hexs, p)) {
+        const c = { x: p.x + hr, y: p.y + 1.75 * hr }
+        hexs[`${c.x}:${c.y}`] = c
+        createHex(c)
         limit--
         // if (limit <= 0) return
       } else if (spaceOnTheTopLeft(hexs, p)) {
-        let x = p.x - hr
-        let y = p.y - 1.75 * hr
-        // newHex.topLeft = true
-        hexs[`${x}:${y}`] = { x, y }
-        // hex.bottomRight = true
-        fadeIn(x, y)
+        const c = { x: p.x - hr, y: p.y - 1.75 * hr }
+        hexs[`${c.x}:${c.y}`] = c
+        createHex(c)
         limit--
       } else if (spaceOnTheBottomLeft(hexs, p)) {
-        let x = p.x - hr
-        let y = p.y + 1.75 * hr
-        // newHex.topLeft = true
-        hexs[`${x}:${y}`] = { x, y }
-        // hex.bottomRight = true
-        fadeIn(x, y)
+        const c = { x: p.x - hr, y: p.y + 1.75 * hr }
+        hexs[`${c.x}:${c.y}`] = c
+        createHex(c)
         limit--
       }
     })
@@ -258,26 +198,24 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     paper.setup(canvas)
 
     // Initial hex coords (center of the screeen)
-    const xc = CANVAS_WIDTH / 2
-    const yc = CANVAS_HEIGHT / 2
+    const cx = CANVAS_WIDTH / 2
+    const cy = CANVAS_HEIGHT / 2
 
     // All the hexes stored in map
     const hexs: Hexs = {}
 
     // Initial hex
-    const h1 = createHex({ x: xc, y: yc })
-    hexs[`${xc}:${yc}`] = { x: xc, y: yc }
+    // TODO: consider change hexs values to paper.Point
+    const hPos = new paper.Point(cx, cy)
+    hexs[`${cx}:${cy}`] = { x: cx, y: cy }
 
     // Limit of articles left to show
     // Now -1 is is due to the first hex already created
     // TODO: show more hexes initially
     let limit = articles.length - 1
 
-    const hPos = new paper.Point(h1.coords.x, h1.coords.y)
-
     // Picture for the initial hex
     let sampleUrl = `${baseUrl}${articles[0].cover.url}`
-    // console.log(sampleUrl)
     const raster = new paper.Raster(sampleUrl)
     raster.position = hPos
 
