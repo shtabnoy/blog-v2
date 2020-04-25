@@ -2,6 +2,7 @@
 import { jsx } from '@emotion/core'
 import React from 'react'
 import { gql, useQuery } from '@apollo/client'
+import CanvasView from '../components/CanvasView'
 
 const GET_ARTICLES = gql`
   query getArticles {
@@ -28,15 +29,21 @@ const HomePage: React.FC = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
 
-  return data.articles.map((article: any) => (
+  return (
     <React.Fragment>
-      <img
-        src={'http://localhost:1337' + article.cover.url}
-        alt={article.cover.name}
-      />
-      <div key={article.id}>{article.title}</div>
+      <CanvasView articles={data.articles} />
     </React.Fragment>
-  ))
+  )
+
+  // return data.articles.map((article: any) => (
+  //   <React.Fragment>
+  //     <img
+  //       src={'http://localhost:1337' + article.cover.url}
+  //       alt={article.cover.name}
+  //     />
+  //     <div key={article.id}>{article.title}</div>
+  //   </React.Fragment>
+  // ))
 }
 
 export default HomePage
