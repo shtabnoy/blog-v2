@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import paper from 'paper'
 
 const baseUrl = 'http://localhost:1337' // TODO: make it dependable on .env
@@ -10,22 +10,18 @@ interface Point {
   y: number
 }
 
-// interface Hex {
-//   coords: Point
-// right: boolean
-// left: boolean
-// bottomRight: boolean
-// bottomLeft: boolean
-// topRight: boolean
-// topLeft: boolean
-// }
-
 interface Hexs {
   [key: string]: Point
 }
 
+interface Article {
+  cover: {
+    url: string
+  }
+}
+
 interface CanvasViewProps {
-  articles: any[]
+  articles: Article[]
 }
 
 // Hex radius
@@ -76,20 +72,32 @@ const onHexLeave = (group: any) => {
   // shadow.remove()
 }
 
-const createHex = (c: Point) => {
-  const h = new paper.Path.RegularPolygon(new paper.Point(c.x, c.y), 6, hr)
-  h.fillColor = ('white' as unknown) as paper.Color // ??? wtf
-  h.onMouseEnter = () => onHexEnter(h)
-  h.onMouseLeave = () => onHexLeave(h)
-  fadeIn(h)
+const createHex = (c: Point, articleUrl: string) => {
+  const p = new paper.Point(c.x, c.y)
+  const h = new paper.Path.RegularPolygon(p, 6, hr)
+
+  // Picture for the initial hex
+  const sampleUrl = `${baseUrl}${articleUrl}`
+  const raster = new paper.Raster(sampleUrl)
+  raster.position = p
+
+  // Hex on the paper
+  // const h = new paper.Path.RegularPolygon(hPos, 6, hr)
+  // h.fillColor = ('#e9e9ff' as unknown) as paper.Color // ??? wtf
+  h.clipMask = true
+  let group = new paper.Group([raster, h])
+  group.onMouseEnter = () => onHexEnter(group)
+  group.onMouseLeave = () => onHexLeave(group)
+  // fadeIn(h)
 }
 
 const fadeIn = (h: paper.Path.RegularPolygon) => {
-  let tween = h.tweenTo(
-    { fillColor: '#e9e9ff' },
-    { duration: fadeInTime, start: false }
-  )
-  tween.start()
+  // TODO: animate opacity of the picture from 0 to 1
+  // let tween = h.tweenTo(
+  //   { fillColor: '#e9e9ff' },
+  //   { duration: fadeInTime, start: false }
+  // )
+  // tween.start()
 }
 
 const spaceOnTheLeft = (hexs: Hexs, p: Point) => {
@@ -137,57 +145,61 @@ const spaceOnTheBottomLeft = (hexs: Hexs, p: Point) => {
   )
 }
 
+const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
+  const len = Object.keys(hexs).length
+  if (len >= articles.length) return
+  Object.values(hexs).forEach((p) => {
+    // console.log(hexs, p)
+
+    if (spaceOnTheLeft(hexs, p)) {
+      // console.log('left')
+      const c = { x: p.x - 2 * hr, y: p.y }
+      // TODO: articles[len].cover.url is unsafe
+      createHex(c, articles[Object.keys(hexs).length].cover.url)
+      hexs[`${c.x}:${c.y}`] = c
+    } else if (spaceOnTheRight(hexs, p)) {
+      // console.log('right')
+      const c = { x: p.x + 2 * hr, y: p.y }
+      createHex(c, articles[Object.keys(hexs).length].cover.url)
+      hexs[`${c.x}:${c.y}`] = c
+    } else if (spaceOnTheTopRight(hexs, p)) {
+      // console.log('topright')
+      const c = { x: p.x + hr, y: p.y - 1.75 * hr }
+      createHex(c, articles[Object.keys(hexs).length].cover.url)
+      hexs[`${c.x}:${c.y}`] = c
+    } else if (spaceOnTheBottomRight(hexs, p)) {
+      // console.log('bottomright')
+      const c = { x: p.x + hr, y: p.y + 1.75 * hr }
+      createHex(c, articles[Object.keys(hexs).length].cover.url)
+      hexs[`${c.x}:${c.y}`] = c
+    } else if (spaceOnTheTopLeft(hexs, p)) {
+      // console.log('topleft')
+      const c = { x: p.x - hr, y: p.y - 1.75 * hr }
+      createHex(c, articles[Object.keys(hexs).length].cover.url)
+      hexs[`${c.x}:${c.y}`] = c
+    } else if (spaceOnTheBottomLeft(hexs, p)) {
+      // console.log('bottomleft')
+      const c = { x: p.x - hr, y: p.y + 1.75 * hr }
+      createHex(c, articles[Object.keys(hexs).length].cover.url)
+      hexs[`${c.x}:${c.y}`] = c
+    }
+  })
+}
+
 /** Dragging */
-const setupDragging = (hexs: Hexs, limit: number) => {
+const setupDragging = (onDrag: () => void) => {
   var toolPan = new paper.Tool()
   toolPan.activate()
   toolPan.onMouseDrag = function (event: any) {
     let delta = event.downPoint.subtract(event.point) as number
     ;(paper.view as any).scrollBy(delta)
 
-    if (limit <= 0) return
-    Object.values(hexs).forEach((p) => {
-      if (spaceOnTheLeft(hexs, p)) {
-        const c = { x: p.x - 2 * hr, y: p.y }
-        hexs[`${c.x}:${c.y}`] = c
-        createHex(c)
-        limit--
-        // if (limit <= 0) return
-      } else if (spaceOnTheRight(hexs, p)) {
-        const c = { x: p.x + 2 * hr, y: p.y }
-        hexs[`${c.x}:${c.y}`] = c
-        createHex(c)
-        limit--
-        // if (limit <= 0) return
-      } else if (spaceOnTheTopRight(hexs, p)) {
-        const c = { x: p.x + hr, y: p.y - 1.75 * hr }
-        hexs[`${c.x}:${c.y}`] = c
-        createHex(c)
-        limit--
-        // if (limit <= 0) return
-      } else if (spaceOnTheBottomRight(hexs, p)) {
-        const c = { x: p.x + hr, y: p.y + 1.75 * hr }
-        hexs[`${c.x}:${c.y}`] = c
-        createHex(c)
-        limit--
-        // if (limit <= 0) return
-      } else if (spaceOnTheTopLeft(hexs, p)) {
-        const c = { x: p.x - hr, y: p.y - 1.75 * hr }
-        hexs[`${c.x}:${c.y}`] = c
-        createHex(c)
-        limit--
-      } else if (spaceOnTheBottomLeft(hexs, p)) {
-        const c = { x: p.x - hr, y: p.y + 1.75 * hr }
-        hexs[`${c.x}:${c.y}`] = c
-        createHex(c)
-        limit--
-      }
-    })
+    onDrag()
   }
 }
 
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
-  // console.log(articles)
+  // console.log(articles.map((a) => a.cover.url))
   useEffect(() => {
     // Setup canvas and paper
     const canvas = document.getElementById('canvas-view') as HTMLCanvasElement
@@ -205,30 +217,14 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     const hexs: Hexs = {}
 
     // Initial hex
-    // TODO: consider change hexs values to paper.Point
-    const hPos = new paper.Point(cx, cy)
-    hexs[`${cx}:${cy}`] = { x: cx, y: cy }
+    const pos = { x: cx, y: cy }
+    hexs[`${cx}:${cy}`] = pos
 
-    // Limit of articles left to show
-    // Now -1 is is due to the first hex already created
-    // TODO: show more hexes initially
-    let limit = articles.length - 1
+    createHex(pos, articles[0].cover.url)
+    checkAndAddHexes(hexs, articles)
 
-    // Picture for the initial hex
-    let sampleUrl = `${baseUrl}${articles[0].cover.url}`
-    const raster = new paper.Raster(sampleUrl)
-    raster.position = hPos
-
-    // Hex on the paper
-    const h = new paper.Path.RegularPolygon(hPos, 6, hr)
-    h.fillColor = ('#e9e9ff' as unknown) as paper.Color // ??? wtf
-    h.clipMask = true
-    let group = new paper.Group([raster, h])
-    group.onMouseEnter = () => onHexEnter(group)
-    group.onMouseLeave = () => onHexLeave(group)
-
-    setupDragging(hexs, limit)
-  })
+    setupDragging(() => checkAndAddHexes(hexs, articles))
+  }, [])
 
   return (
     <React.Fragment>
