@@ -77,13 +77,21 @@ const createHex = (c: Point, articleUrl: string) => {
   const h = new paper.Path.RegularPolygon(p, 6, hr)
 
   // Picture for the initial hex
-  const sampleUrl = `${baseUrl}${articleUrl}`
-  const raster = new paper.Raster(sampleUrl)
-  raster.position = p
+  const url = `${baseUrl}${articleUrl}`
+  console.log(url)
+  paper.project.importSVG(url, (item: paper.Item) => {
+    item.position = p
+    item.fillColor = new paper.Color('#4EC5F1')
+    let group = new paper.Group([item, h])
+    h.fillColor = new paper.Color('#FFF8D2')
+    h.blendMode = 'destination-atop'
+    group.opacity = 0
+    group.onMouseEnter = () => onHexEnter(group)
+    group.onMouseLeave = () => onHexLeave(group)
+  })
 
-  h.clipMask = true
-  let group = new paper.Group([raster, h])
-  group.opacity = 0
+  let group = new paper.Group(h)
+  h.fillColor = new paper.Color('#FFF8D2')
   group.onMouseEnter = () => onHexEnter(group)
   group.onMouseLeave = () => onHexLeave(group)
 }

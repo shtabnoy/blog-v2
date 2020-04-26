@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from '@emotion/core'
+import { jsx, css } from '@emotion/core'
 import React from 'react'
 import { gql, useQuery } from '@apollo/client'
 import CanvasView from '../components/CanvasView'
@@ -31,7 +31,18 @@ const HomePage: React.FC = () => {
 
   return (
     <React.Fragment>
-      <CanvasView articles={data.articles} />
+      {/* <div
+        css={css`
+          height: 200px;
+        `}
+      >
+        Hello world
+      </div> */}
+      <CanvasView
+        articles={data.articles.filter((article: any) =>
+          article.cover.url.endsWith('.svg')
+        )}
+      />
     </React.Fragment>
   )
 
