@@ -28,7 +28,7 @@ interface CanvasViewProps {
 const hr = 200
 
 // Scale step
-const step = 0.015
+const scaleStep = 0.015
 
 // Hex gap
 const hg = 200
@@ -37,8 +37,8 @@ const hg = 200
 const CANVAS_WIDTH = window.innerWidth
 const CANVAS_HEIGHT = window.innerHeight
 
-// fadeIn time
-const fadeInTime = 400
+// opacity step
+const opacityStep = 0.04
 
 const onHexEnter = (group: any) => {
   let scale = 1
@@ -53,7 +53,7 @@ const onHexEnter = (group: any) => {
       // shadow.strokeColor = '#f7d3ff'
       return
     }
-    scale += step
+    scale += scaleStep
     group.scaling = scale
   }
 }
@@ -66,7 +66,7 @@ const onHexLeave = (group: any) => {
       group.onFrame = undefined
       return
     }
-    scale -= step
+    scale -= scaleStep
     group.scaling = scale
   }
   // shadow.remove()
@@ -81,23 +81,11 @@ const createHex = (c: Point, articleUrl: string) => {
   const raster = new paper.Raster(sampleUrl)
   raster.position = p
 
-  // Hex on the paper
-  // const h = new paper.Path.RegularPolygon(hPos, 6, hr)
-  // h.fillColor = ('#e9e9ff' as unknown) as paper.Color // ??? wtf
   h.clipMask = true
   let group = new paper.Group([raster, h])
+  group.opacity = 0
   group.onMouseEnter = () => onHexEnter(group)
   group.onMouseLeave = () => onHexLeave(group)
-  // fadeIn(h)
-}
-
-const fadeIn = (h: paper.Path.RegularPolygon) => {
-  // TODO: animate opacity of the picture from 0 to 1
-  // let tween = h.tweenTo(
-  //   { fillColor: '#e9e9ff' },
-  //   { duration: fadeInTime, start: false }
-  // )
-  // tween.start()
 }
 
 const spaceOnTheLeft = (hexs: Hexs, p: Point) => {
@@ -149,39 +137,53 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
   const len = Object.keys(hexs).length
   if (len >= articles.length) return
   Object.values(hexs).forEach((p) => {
-    // console.log(hexs, p)
-
     if (spaceOnTheLeft(hexs, p)) {
-      // console.log('left')
       const c = { x: p.x - 2 * hr, y: p.y }
-      // TODO: articles[len].cover.url is unsafe
-      createHex(c, articles[Object.keys(hexs).length].cover.url)
-      hexs[`${c.x}:${c.y}`] = c
-    } else if (spaceOnTheRight(hexs, p)) {
-      // console.log('right')
+      const len = Object.keys(hexs).length
+      if (articles[len]) {
+        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        hexs[`${c.x}:${c.y}`] = c
+      }
+    }
+    if (spaceOnTheRight(hexs, p)) {
       const c = { x: p.x + 2 * hr, y: p.y }
-      createHex(c, articles[Object.keys(hexs).length].cover.url)
-      hexs[`${c.x}:${c.y}`] = c
-    } else if (spaceOnTheTopRight(hexs, p)) {
-      // console.log('topright')
+      const len = Object.keys(hexs).length
+      if (articles[len]) {
+        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        hexs[`${c.x}:${c.y}`] = c
+      }
+    }
+    if (spaceOnTheTopRight(hexs, p)) {
       const c = { x: p.x + hr, y: p.y - 1.75 * hr }
-      createHex(c, articles[Object.keys(hexs).length].cover.url)
-      hexs[`${c.x}:${c.y}`] = c
-    } else if (spaceOnTheBottomRight(hexs, p)) {
-      // console.log('bottomright')
+      const len = Object.keys(hexs).length
+      if (articles[len]) {
+        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        hexs[`${c.x}:${c.y}`] = c
+      }
+    }
+    if (spaceOnTheBottomRight(hexs, p)) {
       const c = { x: p.x + hr, y: p.y + 1.75 * hr }
-      createHex(c, articles[Object.keys(hexs).length].cover.url)
-      hexs[`${c.x}:${c.y}`] = c
-    } else if (spaceOnTheTopLeft(hexs, p)) {
-      // console.log('topleft')
+      const len = Object.keys(hexs).length
+      if (articles[len]) {
+        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        hexs[`${c.x}:${c.y}`] = c
+      }
+    }
+    if (spaceOnTheTopLeft(hexs, p)) {
       const c = { x: p.x - hr, y: p.y - 1.75 * hr }
-      createHex(c, articles[Object.keys(hexs).length].cover.url)
-      hexs[`${c.x}:${c.y}`] = c
-    } else if (spaceOnTheBottomLeft(hexs, p)) {
-      // console.log('bottomleft')
+      const len = Object.keys(hexs).length
+      if (articles[len]) {
+        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        hexs[`${c.x}:${c.y}`] = c
+      }
+    }
+    if (spaceOnTheBottomLeft(hexs, p)) {
       const c = { x: p.x - hr, y: p.y + 1.75 * hr }
-      createHex(c, articles[Object.keys(hexs).length].cover.url)
-      hexs[`${c.x}:${c.y}`] = c
+      const len = Object.keys(hexs).length
+      if (articles[len]) {
+        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        hexs[`${c.x}:${c.y}`] = c
+      }
     }
   })
 }
@@ -199,7 +201,6 @@ const setupDragging = (onDrag: () => void) => {
 }
 
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
-  // console.log(articles.map((a) => a.cover.url))
   useEffect(() => {
     // Setup canvas and paper
     const canvas = document.getElementById('canvas-view') as HTMLCanvasElement
@@ -224,6 +225,16 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     checkAndAddHexes(hexs, articles)
 
     setupDragging(() => checkAndAddHexes(hexs, articles))
+
+    paper.view.onFrame = () => {
+      // fade in every new element
+      paper.project.activeLayer.children.forEach((child) => {
+        if (child.opacity >= 1) {
+          return
+        }
+        child.opacity += opacityStep
+      })
+    }
   }, [])
 
   return (
