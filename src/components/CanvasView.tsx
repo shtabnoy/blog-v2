@@ -18,6 +18,7 @@ interface Article {
   cover: {
     url: string
   }
+  title: string
 }
 
 interface CanvasViewProps {
@@ -40,7 +41,8 @@ const CANVAS_HEIGHT = window.innerHeight
 // opacity step
 const opacityStep = 0.04
 
-const onHexEnter = (group: any) => {
+const onHexEnter = (group: paper.Group) => {
+  console.log(group)
   let scale = 1
   group.applyMatrix = false
   group.onFrame = () => {
@@ -54,11 +56,11 @@ const onHexEnter = (group: any) => {
       return
     }
     scale += scaleStep
-    group.scaling = scale
+    group.scaling = new paper.Point(scale, scale)
   }
 }
 
-const onHexLeave = (group: any) => {
+const onHexLeave = (group: paper.Group) => {
   let scale = 1.1
   group.applyMatrix = false
   group.onFrame = () => {
@@ -67,33 +69,31 @@ const onHexLeave = (group: any) => {
       return
     }
     scale -= scaleStep
-    group.scaling = scale
+    group.scaling = new paper.Point(scale, scale)
   }
   // shadow.remove()
 }
 
-const createHex = (c: Point, articleUrl: string) => {
-  const p = new paper.Point(c.x, c.y)
-  const h = new paper.Path.RegularPolygon(p, 6, hr)
-
+const createHex = (c: Point, articleUrl: string, articleTitle?: string) => {
   // Picture for the initial hex
   const url = `${baseUrl}${articleUrl}`
-  console.log(url)
-  paper.project.importSVG(url, (item: paper.Item) => {
-    item.position = p
-    item.fillColor = new paper.Color('#4EC5F1')
-    let group = new paper.Group([item, h])
+  paper.project.importSVG(url, (img: paper.Item) => {
+    const p = new paper.Point(c.x, c.y)
+    const h = new paper.Path.RegularPolygon(p, 6, hr)
+
+    img.position = p
+    const title = new paper.PointText(new paper.Point(p.x, p.y - 80))
+    title.content = articleTitle
+    title.fontFamily = 'Comfortaa'
+    title.justification = 'center'
+    title.fontSize = 18
+    const group = new paper.Group([title, img, h])
     h.fillColor = new paper.Color('#FFF8D2')
     h.blendMode = 'destination-atop'
     group.opacity = 0
     group.onMouseEnter = () => onHexEnter(group)
     group.onMouseLeave = () => onHexLeave(group)
   })
-
-  let group = new paper.Group(h)
-  h.fillColor = new paper.Color('#FFF8D2')
-  group.onMouseEnter = () => onHexEnter(group)
-  group.onMouseLeave = () => onHexLeave(group)
 }
 
 const spaceOnTheLeft = (hexs: Hexs, p: Point) => {
@@ -149,7 +149,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x - 2 * hr, y: p.y }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        createHex(c, articles[len].cover.url, articles[len].title)
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -157,7 +157,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x + 2 * hr, y: p.y }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        createHex(c, articles[len].cover.url, articles[len].title)
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -165,7 +165,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x + hr, y: p.y - 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        createHex(c, articles[len].cover.url, articles[len].title)
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -173,7 +173,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x + hr, y: p.y + 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        createHex(c, articles[len].cover.url, articles[len].title)
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -181,7 +181,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x - hr, y: p.y - 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        createHex(c, articles[len].cover.url, articles[len].title)
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -189,7 +189,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x - hr, y: p.y + 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[Object.keys(hexs).length].cover.url)
+        createHex(c, articles[len].cover.url, articles[len].title)
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -229,7 +229,7 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     const pos = { x: cx, y: cy }
     hexs[`${cx}:${cy}`] = pos
 
-    createHex(pos, articles[0].cover.url)
+    createHex(pos, articles[0].cover.url, articles[0].title)
     checkAndAddHexes(hexs, articles)
 
     setupDragging(() => checkAndAddHexes(hexs, articles))
