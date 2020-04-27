@@ -41,18 +41,31 @@ const CANVAS_HEIGHT = window.innerHeight
 // opacity step
 const opacityStep = 0.04
 
+let shadow: paper.Path.RegularPolygon = null
+
 const onHexEnter = (group: paper.Group) => {
-  console.log(group)
+  // console.log(group)
   let scale = 1
   group.applyMatrix = false
+
+  // const hex = group.lastChild
+  // hex.shadowColor = new paper.Color('#ffe493')
+  // hex.shadowBlur = 10
+
   group.onFrame = () => {
     if (scale >= 1.1) {
       group.onFrame = undefined
-      // shadow = new paper.Path.RegularPolygon(group.position, 6, hr * 1.1)
-      // shadow.shadowColor = '#e024fb'
-      // shadow.shadowBlur = 10
-      // shadow.strokeWidth = 4
-      // shadow.strokeColor = '#f7d3ff'
+      // artificial polygon which is placed under the current polygon
+      // cause it's hard to create a proper shadow for a group
+      // that has rectangular bounds and a blendmode
+      shadow = new paper.Path.RegularPolygon(group.position, 6, hr * 1.1)
+      shadow.shadowColor = new paper.Color('#ffe493')
+      shadow.shadowBlur = 10
+      shadow.shadowOffset = new paper.Point(8, 8)
+      shadow.fillColor = new paper.Color('#ffe493')
+      // shadow.strokeWidth = 2
+      // shadow.strokeColor = new paper.Color('#ffe493')
+      shadow.sendToBack()
       return
     }
     scale += scaleStep
@@ -71,7 +84,7 @@ const onHexLeave = (group: paper.Group) => {
     scale -= scaleStep
     group.scaling = new paper.Point(scale, scale)
   }
-  // shadow.remove()
+  shadow.remove()
 }
 
 const createHex = (c: Point, articleUrl: string, articleTitle?: string) => {
