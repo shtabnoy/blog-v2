@@ -44,32 +44,25 @@ const opacityStep = 0.04
 let shadow: paper.Path.RegularPolygon = null
 
 const onHexEnter = (group: paper.Group) => {
-  // console.log(group)
   let scale = 1
   group.applyMatrix = false
 
-  // const hex = group.lastChild
-  // hex.shadowColor = new paper.Color('#ffe493')
-  // hex.shadowBlur = 10
+  shadow = new paper.Path.RegularPolygon(group.position, 6, hr)
+  shadow.applyMatrix = false
+  shadow.shadowColor = new paper.Color('#ffe493')
+  shadow.shadowBlur = 8
+  shadow.shadowOffset = new paper.Point(10, 8)
+  shadow.fillColor = new paper.Color('#ffe493')
+  shadow.sendToBack()
 
   group.onFrame = () => {
     if (scale >= 1.1) {
       group.onFrame = undefined
-      // artificial polygon which is placed under the current polygon
-      // cause it's hard to create a proper shadow for a group
-      // that has rectangular bounds and a blendmode
-      shadow = new paper.Path.RegularPolygon(group.position, 6, hr * 1.1)
-      shadow.shadowColor = new paper.Color('#ffe493')
-      shadow.shadowBlur = 10
-      shadow.shadowOffset = new paper.Point(8, 8)
-      shadow.fillColor = new paper.Color('#ffe493')
-      // shadow.strokeWidth = 2
-      // shadow.strokeColor = new paper.Color('#ffe493')
-      shadow.sendToBack()
       return
     }
     scale += scaleStep
     group.scaling = new paper.Point(scale, scale)
+    shadow.scaling = new paper.Point(scale, scale)
   }
 }
 
