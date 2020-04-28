@@ -63,10 +63,20 @@ let shadow: paper.Path.RegularPolygon = null
 // const shadowColor = '#142850'
 
 // palette 3
-const background = '#effcef'
-const primary = '#ccedd2'
-const secondary = '#94d3ac'
-const shadowColor = '#588569'
+// const background = '#effcef'
+// const primary = '#ccedd2'
+// const secondary = '#94d3ac'
+// const shadowColor = '#588569'
+
+// const grad1 = '#00ccff'
+// const grad2 = '#fdfd1e'
+// const grad1 = '#4fb0cf'
+// const grad2 = '#9341f6'
+const grad1 = '#4456D6'
+const grad2 = '#D931BA'
+const backgroundGrad1 = '#3542A8'
+const backgroundGrad2 = '#841E71'
+const shadowColor = '#100d23'
 
 const onHexEnter = (group: paper.Group) => {
   let scale = 1
@@ -79,7 +89,7 @@ const onHexEnter = (group: paper.Group) => {
   shadow = new paper.Path.RegularPolygon(group.position, 6, hr)
   shadow.applyMatrix = false
   shadow.shadowColor = new paper.Color(shadowColor)
-  shadow.shadowBlur = 4
+  shadow.shadowBlur = 14
   shadow.shadowOffset = new paper.Point(12, 10)
   shadow.fillColor = new paper.Color(shadowColor)
   shadow.sendToBack()
@@ -125,10 +135,22 @@ const createHex = (c: Point, articleUrl: string, articleTitle?: string) => {
     title.fontFamily = 'Comfortaa'
     title.justification = 'center'
     title.fontSize = 18
+    title.fillColor = new paper.Color('#fff')
     const group = new paper.Group([title, img, h])
-    h.fillColor = new paper.Color(primary)
-    h.strokeColor = new paper.Color(secondary)
-    h.strokeWidth = 4
+    // h.fillColor = new paper.Color(primary)
+    h.fillColor = {
+      gradient: {
+        stops: [
+          [grad1, 0.3],
+          [grad2, 1],
+        ],
+        radial: false,
+      },
+      origin: h.bounds.topCenter,
+      destination: h.bounds.bottomCenter,
+    } as any
+    h.strokeColor = new paper.Color('white')
+    h.strokeWidth = 2
     h.blendMode = 'destination-atop'
     group.opacity = 0
     group.onMouseEnter = () => onHexEnter(group)
@@ -256,8 +278,8 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     canvas.height = CANVAS_HEIGHT
     canvas.style.width = `${CANVAS_WIDTH}px`
     canvas.style.height = `${CANVAS_HEIGHT}px`
-    // canvas.style.backgroundColor = '#dad2ff'
-    canvas.style.backgroundColor = background
+    // canvas.style.backgroundColor = background
+    canvas.style.background = `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`
     paper.setup(canvas)
 
     // Initial hex coords (center of the screeen)
