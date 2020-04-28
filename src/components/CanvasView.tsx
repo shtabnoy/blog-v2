@@ -44,10 +44,29 @@ const opacityStep = 0.04
 let shadow: paper.Path.RegularPolygon = null
 
 // colors
-const background = '#649d66'
-const primary = '#f6f578'
-const secondary = '#f6d743'
-const tertiary = '#06623b'
+// palette 1
+// const background = '#af8baf'
+// const primary = '#f6acc8'
+// const secondary = '#584153'
+// const shadowColor = '#26191b'
+
+// palette 2
+// const background = '#649d66'
+// const primary = '#f6f578'
+// const secondary = '#f6d743'
+// const shadowColor = '#06623b'
+
+// palette night theme 1
+// const background = '#27496d'
+// const primary = '#00a8cc'
+// const secondary = '#0c7b93'
+// const shadowColor = '#142850'
+
+// palette 3
+const background = '#effcef'
+const primary = '#ccedd2'
+const secondary = '#94d3ac'
+const shadowColor = '#588569'
 
 const onHexEnter = (group: paper.Group) => {
   let scale = 1
@@ -59,10 +78,10 @@ const onHexEnter = (group: paper.Group) => {
 
   shadow = new paper.Path.RegularPolygon(group.position, 6, hr)
   shadow.applyMatrix = false
-  shadow.shadowColor = new paper.Color(tertiary)
+  shadow.shadowColor = new paper.Color(shadowColor)
   shadow.shadowBlur = 4
   shadow.shadowOffset = new paper.Point(12, 10)
-  shadow.fillColor = new paper.Color(tertiary)
+  shadow.fillColor = new paper.Color(shadowColor)
   shadow.sendToBack()
 
   group.onFrame = () => {
