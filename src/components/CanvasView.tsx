@@ -43,16 +43,26 @@ const opacityStep = 0.04
 
 let shadow: paper.Path.RegularPolygon = null
 
+// colors
+const background = '#649d66'
+const primary = '#f6f578'
+const secondary = '#f6d743'
+const tertiary = '#06623b'
+
 const onHexEnter = (group: paper.Group) => {
   let scale = 1
   group.applyMatrix = false
 
+  let hex = group.lastChild
+  // hex.strokeColor = new paper.Color(secondary)
+  // hex.strokeWidth = 4
+
   shadow = new paper.Path.RegularPolygon(group.position, 6, hr)
   shadow.applyMatrix = false
-  shadow.shadowColor = new paper.Color('#ffe493')
-  shadow.shadowBlur = 8
-  shadow.shadowOffset = new paper.Point(10, 8)
-  shadow.fillColor = new paper.Color('#ffe493')
+  shadow.shadowColor = new paper.Color(tertiary)
+  shadow.shadowBlur = 4
+  shadow.shadowOffset = new paper.Point(12, 10)
+  shadow.fillColor = new paper.Color(tertiary)
   shadow.sendToBack()
 
   group.onFrame = () => {
@@ -69,6 +79,9 @@ const onHexEnter = (group: paper.Group) => {
 const onHexLeave = (group: paper.Group) => {
   let scale = 1.1
   group.applyMatrix = false
+  let hex = group.lastChild
+  // hex.strokeColor = new paper.Color(secondary)
+  // hex.strokeWidth = 0
   group.onFrame = () => {
     if (scale <= 1) {
       group.onFrame = undefined
@@ -94,7 +107,9 @@ const createHex = (c: Point, articleUrl: string, articleTitle?: string) => {
     title.justification = 'center'
     title.fontSize = 18
     const group = new paper.Group([title, img, h])
-    h.fillColor = new paper.Color('#FFF8D2')
+    h.fillColor = new paper.Color(primary)
+    h.strokeColor = new paper.Color(secondary)
+    h.strokeWidth = 4
     h.blendMode = 'destination-atop'
     group.opacity = 0
     group.onMouseEnter = () => onHexEnter(group)
@@ -222,6 +237,8 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     canvas.height = CANVAS_HEIGHT
     canvas.style.width = `${CANVAS_WIDTH}px`
     canvas.style.height = `${CANVAS_HEIGHT}px`
+    // canvas.style.backgroundColor = '#dad2ff'
+    canvas.style.backgroundColor = background
     paper.setup(canvas)
 
     // Initial hex coords (center of the screeen)
