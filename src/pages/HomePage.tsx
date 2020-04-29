@@ -17,6 +17,12 @@ const GET_ARTICLES = gql`
         url
         name
       }
+      category {
+        name
+        image {
+          url
+        }
+      }
       created_at
       updated_at
     }

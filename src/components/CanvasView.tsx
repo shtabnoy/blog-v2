@@ -19,6 +19,11 @@ interface Article {
     url: string
   }
   title: string
+  category: {
+    image: {
+      url: string
+    }
+  }
 }
 
 interface CanvasViewProps {
@@ -122,22 +127,31 @@ const onHexLeave = (group: paper.Group) => {
   shadow.remove()
 }
 
-const createHex = (c: Point, articleUrl: string, articleTitle?: string) => {
-  // Picture for the initial hex
-  const url = `${baseUrl}${articleUrl}`
-  paper.project.importSVG(url, (img: paper.Item) => {
+const createHex = (c: Point, article: Article) => {
+  const { cover, category, title } = article
+  // TODO: add placeholder is there's no cover image or category image
+  const coverUrl =
+    cover && cover.url
+      ? `${baseUrl}${article.cover.url}`
+      : `${baseUrl}/uploads/bucket_bff731000e.svg`
+  const catUrl =
+    category && category.image && category.image.url
+      ? `${baseUrl}${category.image.url}`
+      : `${baseUrl}/uploads/bucket_bff731000e.svg`
+
+  paper.project.importSVG(coverUrl, (img: paper.Item) => {
     const p = new paper.Point(c.x, c.y)
     const h = new paper.Path.RegularPolygon(p, 6, hr)
 
     img.position = p
-    const title = new paper.PointText(new paper.Point(p.x, p.y - 80))
-    title.content = articleTitle
-    title.fontFamily = 'Comfortaa'
-    title.justification = 'center'
-    title.fontSize = 18
-    title.fillColor = new paper.Color('#fff')
-    const group = new paper.Group([title, img, h])
-    // h.fillColor = new paper.Color(primary)
+    const titleText = new paper.PointText(new paper.Point(p.x, p.y - 80))
+    titleText.content = title
+    titleText.fontFamily = 'Comfortaa'
+    titleText.justification = 'center'
+    titleText.fontSize = 18
+    titleText.fillColor = new paper.Color('#fff')
+    const group = new paper.Group([titleText, img, h])
+    // h.fillColor = new paper.Color('#bbb223')
     h.fillColor = {
       gradient: {
         stops: [
@@ -211,7 +225,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x - 2 * hr, y: p.y }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[len].cover.url, articles[len].title)
+        createHex(c, articles[len])
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -219,7 +233,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x + 2 * hr, y: p.y }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[len].cover.url, articles[len].title)
+        createHex(c, articles[len])
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -227,7 +241,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x + hr, y: p.y - 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[len].cover.url, articles[len].title)
+        createHex(c, articles[len])
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -235,7 +249,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x + hr, y: p.y + 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[len].cover.url, articles[len].title)
+        createHex(c, articles[len])
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -243,7 +257,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x - hr, y: p.y - 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[len].cover.url, articles[len].title)
+        createHex(c, articles[len])
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -251,7 +265,7 @@ const checkAndAddHexes = (hexs: Hexs, articles: Article[]) => {
       const c = { x: p.x - hr, y: p.y + 1.75 * hr }
       const len = Object.keys(hexs).length
       if (articles[len]) {
-        createHex(c, articles[len].cover.url, articles[len].title)
+        createHex(c, articles[len])
         hexs[`${c.x}:${c.y}`] = c
       }
     }
@@ -293,7 +307,7 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     const pos = { x: cx, y: cy }
     hexs[`${cx}:${cy}`] = pos
 
-    createHex(pos, articles[0].cover.url, articles[0].title)
+    createHex(pos, articles[0])
     checkAndAddHexes(hexs, articles)
 
     setupDragging(() => checkAndAddHexes(hexs, articles))
