@@ -113,7 +113,7 @@ const onHexEnter = (group: paper.Group) => {
 const onHexLeave = (group: paper.Group) => {
   let scale = 1.1
   group.applyMatrix = false
-  let hex = group.lastChild
+  // let hex = group.lastChild
   // hex.strokeColor = new paper.Color(secondary)
   // hex.strokeWidth = 0
   group.onFrame = () => {
@@ -127,49 +127,74 @@ const onHexLeave = (group: paper.Group) => {
   shadow.remove()
 }
 
-const createHex = (c: Point, article: Article) => {
-  const { cover, category, title } = article
-  // TODO: add placeholder is there's no cover image or category image
-  const coverUrl =
-    cover && cover.url
-      ? `${baseUrl}${article.cover.url}`
-      : `${baseUrl}/uploads/bucket_bff731000e.svg`
-  const catUrl =
-    category && category.image && category.image.url
-      ? `${baseUrl}${category.image.url}`
-      : `${baseUrl}/uploads/bucket_bff731000e.svg`
-
-  paper.project.importSVG(coverUrl, (img: paper.Item) => {
-    const p = new paper.Point(c.x, c.y)
-    const h = new paper.Path.RegularPolygon(p, 6, hr)
-
-    img.position = p
-    const titleText = new paper.PointText(new paper.Point(p.x, p.y - 80))
-    titleText.content = title
-    titleText.fontFamily = 'Comfortaa'
-    titleText.justification = 'center'
-    titleText.fontSize = 18
-    titleText.fillColor = new paper.Color('#fff')
-    const group = new paper.Group([titleText, img, h])
-    // h.fillColor = new paper.Color('#bbb223')
-    h.fillColor = {
-      gradient: {
-        stops: [
-          [grad1, 0.3],
-          [grad2, 1],
-        ],
-        radial: false,
+const importSvg = (url: string): Promise<paper.Item> => {
+  return new Promise((resolve, reject) => {
+    paper.project.importSVG(url, {
+      onLoad: (item: paper.Item) => {
+        resolve(item)
       },
-      origin: h.bounds.topCenter,
-      destination: h.bounds.bottomCenter,
-    } as any
-    h.strokeColor = new paper.Color('white')
-    h.strokeWidth = 2
-    h.blendMode = 'destination-atop'
-    group.opacity = 0
-    group.onMouseEnter = () => onHexEnter(group)
-    group.onMouseLeave = () => onHexLeave(group)
+      onError: (error: any) => {
+        reject(error)
+      },
+    })
   })
+}
+
+const createHex = async (c: Point, article: Article) => {
+  const { cover, category, title } = article
+  const catPlaceholder = await importSvg(`<svg></svg>`)
+  let covImg = null
+  let catImg = null
+  try {
+    covImg =
+      cover && cover.url
+        ? await importSvg(`${baseUrl}${article.cover.url}`)
+        : catPlaceholder
+  } catch (error) {
+    console.log('Error loading cover image:', error)
+  }
+
+  try {
+    catImg =
+      category && category.image && category.image.url
+        ? await importSvg(`${baseUrl}${category.image && category.image.url}`)
+        : catPlaceholder
+  } catch (error) {
+    console.log('Error loading category image:', error)
+  }
+
+  // paper.project.importSVG(coverUrl, (img: paper.Item) => {
+  const p = new paper.Point(c.x, c.y)
+  const h = new paper.Path.RegularPolygon(p, 6, hr)
+
+  covImg.position = p
+  catImg.position = new paper.Point(p.x, p.y + 150)
+  const titleText = new paper.PointText(new paper.Point(p.x, p.y - 80))
+  titleText.content = title
+  titleText.fontFamily = 'Comfortaa'
+  titleText.justification = 'center'
+  titleText.fontSize = 18
+  titleText.fillColor = new paper.Color('#fff')
+  const group = new paper.Group([titleText, covImg, catImg, h])
+  // h.fillColor = new paper.Color('#bbb223')
+  h.fillColor = {
+    gradient: {
+      stops: [
+        [grad1, 0.3],
+        [grad2, 1],
+      ],
+      radial: false,
+    },
+    origin: h.bounds.topCenter,
+    destination: h.bounds.bottomCenter,
+  } as any
+  h.strokeColor = new paper.Color('white')
+  h.strokeWidth = 2
+  h.blendMode = 'destination-atop'
+  group.opacity = 0
+  group.onMouseEnter = () => onHexEnter(group)
+  group.onMouseLeave = () => onHexLeave(group)
+  // })
 }
 
 const spaceOnTheLeft = (hexs: Hexs, p: Point) => {
