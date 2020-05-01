@@ -58,28 +58,29 @@ const Header = styled.header`
       min-width: 30px;
       position: absolute;
       left: 8px;
-      /* z-index: 1; */
+      &:hover ~ input {
+        width: 100%;
+      }
     }
 
     input {
-      /* z-index: 2; */
-      padding: 12px 24px;
-      box-shadow: 0px 0px 13px 3px rgba(0, 0, 0, 1);
+      padding: 12px 0px 12px 48px;
+      box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 1);
       border: 0;
       width: 0%;
       color: white;
       background-color: transparent;
       font-size: 16px;
       opacity: 1;
-      background-color: #3542a8;
       transition: width 0.5s ease-in-out;
+      background-color: #3542a8;
 
       &:focus {
         width: 100%;
+        padding-right: 8px;
       }
       &:hover {
         width: 100%;
-        /* padding-left: 40px; */
       }
     }
   }
