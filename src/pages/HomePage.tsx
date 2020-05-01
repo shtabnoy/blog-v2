@@ -41,10 +41,20 @@ const Header = styled.header`
   .search {
     width: 350px;
     height: 44px;
-    border-bottom: 1px solid white;
+    /* border-bottom: 1px solid white; */
     padding: 2px 8px;
     display: flex;
     align-items: center;
+    position: relative;
+    &::after {
+      content: '';
+      background-color: white;
+      position: absolute;
+      width: 0%;
+      height: 1px;
+      bottom: 0;
+      transition: width 0.5s ease-in-out;
+    }
 
     svg {
       margin-right: 8px;
@@ -55,6 +65,15 @@ const Header = styled.header`
       color: white;
       background-color: transparent;
       font-size: 16px;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    &:hover::after {
+      width: 100%;
+    }
+    &:hover input {
+      opacity: 1;
     }
   }
 `
@@ -74,22 +93,13 @@ const HomePage: React.FC = () => {
         </div>
       </Header>
       <CanvasView
+        // TODO: proper handling of articles; not only with an svg cover
         articles={data.articles.filter((article: any) =>
           article.cover.url.endsWith('.svg')
         )}
       />
     </React.Fragment>
   )
-
-  // return data.articles.map((article: any) => (
-  //   <React.Fragment>
-  //     <img
-  //       src={'http://localhost:1337' + article.cover.url}
-  //       alt={article.cover.name}
-  //     />
-  //     <div key={article.id}>{article.title}</div>
-  //   </React.Fragment>
-  // ))
 }
 
 export default HomePage
