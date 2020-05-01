@@ -46,8 +46,8 @@ const Header = styled.header`
     display: flex;
     align-items: center;
     position: relative;
-    &::after {
-      content: '';
+
+    .hidden-border {
       background-color: white;
       position: absolute;
       width: 0%;
@@ -67,11 +67,19 @@ const Header = styled.header`
       font-size: 16px;
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
+
+      &:focus ~ .hidden-border {
+        width: 100%;
+      }
+      &:focus {
+        opacity: 1;
+      }
     }
 
-    &:hover::after {
+    &:hover .hidden-border {
       width: 100%;
     }
+
     &:hover input {
       opacity: 1;
     }
@@ -90,6 +98,7 @@ const HomePage: React.FC = () => {
         <div className="search">
           <SearchIcon fill={'white'} />
           <input type="text" placeholder="Search article" />
+          <div className="hidden-border"></div>
         </div>
       </Header>
       <CanvasView
