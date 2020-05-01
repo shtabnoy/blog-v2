@@ -3,6 +3,8 @@ import { jsx, css } from '@emotion/core'
 import React from 'react'
 import { gql, useQuery } from '@apollo/client'
 import CanvasView from '../components/CanvasView'
+import SearchIcon from '../components/icons/SearchIcon'
+import styled from '@emotion/styled'
 
 const GET_ARTICLES = gql`
   query getArticles {
@@ -29,6 +31,34 @@ const GET_ARTICLES = gql`
   }
 `
 
+const Header = styled.header`
+  padding: 32px;
+  position: absolute;
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .search {
+    width: 350px;
+    height: 44px;
+    border-bottom: 1px solid white;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-right: 8px;
+    }
+
+    input {
+      border: 0;
+      color: white;
+      background-color: transparent;
+      font-size: 16px;
+    }
+  }
+`
+
 const HomePage: React.FC = () => {
   const { loading, error, data } = useQuery(GET_ARTICLES)
 
@@ -37,13 +67,12 @@ const HomePage: React.FC = () => {
 
   return (
     <React.Fragment>
-      {/* <div
-        css={css`
-          height: 200px;
-        `}
-      >
-        Hello world
-      </div> */}
+      <Header>
+        <div className="search">
+          <SearchIcon fill={'white'} />
+          <input type="text" placeholder="Search article" />
+        </div>
+      </Header>
       <CanvasView
         articles={data.articles.filter((article: any) =>
           article.cover.url.endsWith('.svg')
