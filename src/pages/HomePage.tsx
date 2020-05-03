@@ -74,6 +74,9 @@ const Header = styled.header`
       opacity: 1;
       transition: width 0.5s ease-in-out;
       background-color: #5d6afb;
+      &::-webkit-input-placeholder {
+        color: #b4bafd;
+      }
 
       &:focus {
         width: 100%;

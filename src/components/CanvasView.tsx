@@ -84,6 +84,8 @@ const backgroundGrad2 = '#841E71'
 const shadowColor = '#100d23'
 
 const onHexEnter = (group: paper.Group) => {
+  // paper.view.
+  document.body.style.cursor = 'pointer'
   let scale = 1
   group.applyMatrix = false
 
@@ -111,6 +113,7 @@ const onHexEnter = (group: paper.Group) => {
 }
 
 const onHexLeave = (group: paper.Group) => {
+  document.body.style.cursor = 'default'
   let scale = 1.1
   group.applyMatrix = false
   // let hex = group.lastChild
