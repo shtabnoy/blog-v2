@@ -166,7 +166,6 @@ const createHex = async (c: Point, article: Article) => {
     console.log('Error loading category image:', error)
   }
 
-  // paper.project.importSVG(coverUrl, (img: paper.Item) => {
   const p = new paper.Point(c.x, c.y)
   const h = new paper.Path.RegularPolygon(p, 6, hr)
 
@@ -179,7 +178,6 @@ const createHex = async (c: Point, article: Article) => {
   titleText.fontSize = 18
   titleText.fillColor = new paper.Color('#fff')
   const group = new paper.Group([titleText, covImg, catImg, h])
-  // h.fillColor = new paper.Color('#bbb223')
   h.fillColor = {
     gradient: {
       stops: [
@@ -197,7 +195,27 @@ const createHex = async (c: Point, article: Article) => {
   group.opacity = 0
   group.onMouseEnter = () => onHexEnter(group)
   group.onMouseLeave = () => onHexLeave(group)
-  // })
+}
+
+const createCategoryHex = async (c: Point) => {
+  const r = 50
+  const p = new paper.Point(c.x - r, c.y + r)
+  const h = new paper.Path.RegularPolygon(p, 6, r)
+
+  h.fillColor = {
+    gradient: {
+      stops: [
+        [grad1, 0.3],
+        [grad2, 1],
+      ],
+      radial: false,
+    },
+    origin: h.bounds.topCenter,
+    destination: h.bounds.bottomCenter,
+  } as any
+  h.strokeColor = new paper.Color('white')
+  h.strokeWidth = 2
+  h.name = 'categoryHex'
 }
 
 const spaceOnTheLeft = (hexs: Hexs, p: Point) => {
@@ -320,7 +338,7 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     canvas.height = CANVAS_HEIGHT
     canvas.style.width = `${CANVAS_WIDTH}px`
     canvas.style.height = `${CANVAS_HEIGHT}px`
-    // canvas.style.backgroundColor = background
+    canvas.style.display = 'block'
     canvas.style.background = `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`
     paper.setup(canvas)
 
@@ -349,6 +367,8 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         child.opacity += opacityStep
       })
     }
+    // const sl = new paper.Layer()
+    // createCategoryHex(paper.view.bounds.topRight)
   }, [])
 
   return (
