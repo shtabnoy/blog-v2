@@ -364,6 +364,10 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         style={{
           background: `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`,
         }}
+        draggable
+        onDragMove={() => {
+          console.log('hej')
+        }}
       >
         <Layer>
           <Group x={iHexCoords.x} y={iHexCoords.y}>
