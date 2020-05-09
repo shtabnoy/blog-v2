@@ -226,124 +226,6 @@ const shadowColor = '#100d23'
 //   h.name = 'categoryHex'
 // }
 
-const spaceOnTheLeft = (hexs: Hexs, pivot: Point, bounds: Point) => {
-  return (
-    !hexs[`${pivot.x - 2 * hr}:${pivot.y}`] && pivot.x - hr - hg > 0 + bounds.x
-  )
-}
-
-const spaceOnTheRight = (hexs: Hexs, pivot: Point, bounds: Point) => {
-  return (
-    !hexs[`${pivot.x + 2 * hr}:${pivot.y}`] &&
-    pivot.x + hr + hg < CANVAS_WIDTH + bounds.x
-  )
-}
-
-const spaceOnTheTopRight = (hexs: Hexs, pivot: Point, bounds: Point) => {
-  return (
-    !hexs[`${pivot.x + hr}:${pivot.y - 1.75 * hr}`] &&
-    pivot.x + hr + hg < CANVAS_WIDTH + bounds.x &&
-    pivot.y - hr - hg > 0 + bounds.y
-  )
-}
-
-const spaceOnTheBottomRight = (hexs: Hexs, pivot: Point, bounds: Point) => {
-  return (
-    !hexs[`${pivot.x + hr}:${pivot.y + 1.75 * hr}`] &&
-    pivot.x + hr + hg < CANVAS_WIDTH + bounds.x &&
-    pivot.y + hr + hg < CANVAS_HEIGHT + bounds.y
-  )
-}
-
-const spaceOnTheTopLeft = (hexs: Hexs, pivot: Point, bounds: Point) => {
-  return (
-    !hexs[`${pivot.x - hr}:${pivot.y - 1.75 * hr}`] &&
-    pivot.x - hr - hg > 0 + bounds.x &&
-    pivot.y - hr - hg > 0 + bounds.y
-  )
-}
-
-const spaceOnTheBottomLeft = (hexs: Hexs, pivot: Point, bounds: Point) => {
-  return (
-    !hexs[`${pivot.x - hr}:${pivot.y + 1.75 * hr}`] &&
-    pivot.x - hr - hg > 0 + bounds.x &&
-    pivot.y + hr + hg < CANVAS_HEIGHT + bounds.y
-  )
-}
-
-const checkAndAddHexes = (hexs: Hexs, articles: Article[], bounds: Point) => {
-  const len = Object.keys(hexs).length
-  if (len >= articles.length) return
-  Object.values(hexs).forEach((p) => {
-    if (spaceOnTheLeft(hexs, p, bounds)) {
-      const c = { x: p.x - 2 * hr, y: p.y }
-      const len = Object.keys(hexs).length
-      if (articles[len]) {
-        // createHex(c, articles[len])
-        console.log('on the left')
-        hexs[`${c.x}:${c.y}`] = c
-      }
-    }
-    if (spaceOnTheRight(hexs, p, bounds)) {
-      const c = { x: p.x + 2 * hr, y: p.y }
-      const len = Object.keys(hexs).length
-      if (articles[len]) {
-        // createHex(c, articles[len])
-        console.log('on the right')
-        hexs[`${c.x}:${c.y}`] = c
-      }
-    }
-    if (spaceOnTheTopRight(hexs, p, bounds)) {
-      const c = { x: p.x + hr, y: p.y - 1.75 * hr }
-      const len = Object.keys(hexs).length
-      if (articles[len]) {
-        // createHex(c, articles[len])
-        console.log('on the top right')
-        hexs[`${c.x}:${c.y}`] = c
-      }
-    }
-    if (spaceOnTheBottomRight(hexs, p, bounds)) {
-      const c = { x: p.x + hr, y: p.y + 1.75 * hr }
-      const len = Object.keys(hexs).length
-      if (articles[len]) {
-        // createHex(c, articles[len])
-        console.log('on the bottom right')
-        hexs[`${c.x}:${c.y}`] = c
-      }
-    }
-    if (spaceOnTheTopLeft(hexs, p, bounds)) {
-      const c = { x: p.x - hr, y: p.y - 1.75 * hr }
-      const len = Object.keys(hexs).length
-      if (articles[len]) {
-        // createHex(c, articles[len])
-        console.log('on the top left')
-        hexs[`${c.x}:${c.y}`] = c
-      }
-    }
-    if (spaceOnTheBottomLeft(hexs, p, bounds)) {
-      const c = { x: p.x - hr, y: p.y + 1.75 * hr }
-      const len = Object.keys(hexs).length
-      if (articles[len]) {
-        // createHex(c, articles[len])
-        console.log('on the bottom left')
-        hexs[`${c.x}:${c.y}`] = c
-      }
-    }
-  })
-}
-
-// /** Dragging */
-// const setupDragging = (onDrag: () => void) => {
-//   var toolPan = new paper.Tool()
-//   toolPan.activate()
-//   toolPan.onMouseDrag = function (event: any) {
-//     let delta = event.downPoint.subtract(event.point) as number
-//     ;(paper.view as any).scrollBy(delta)
-
-//     onDrag()
-//   }
-// }
-
 interface Hexagon {
   id: string
   x: number
@@ -378,6 +260,8 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   // Initial hex
   hexs[`${iHexCoords.x}:${iHexCoords.y}`] = iHexCoords
 
+  // TODO: check with more hexes. 20 or so
+
   return (
     <React.Fragment>
       <Stage
@@ -390,15 +274,17 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         onDragMove={(event) => {
           const stageX = event.target.getStage().attrs.x
           const stageY = event.target.getStage().attrs.y
-          // const len = hexagons.length
+
           if (hexagons.length >= articles.length) return
           for (let hexagon of hexagons) {
-            // console.log(hexagon)
             let toInsert = articles[hexagons.length]
 
+            // add on the left
             if (
               toInsert &&
-              !hexagons.find((h) => h.id === toInsert.id) &&
+              !hexagons.find(
+                (h) => h.x === hexagon.x - 2 * hr && h.y === hexagon.y
+              ) &&
               hexagon.x - hr - hg + stageX > 0
             ) {
               setHexagons([
@@ -409,73 +295,108 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
                   y: hexagon.y,
                 },
               ])
-              return
+              break
+            }
+
+            // add on the right
+            if (
+              toInsert &&
+              !hexagons.find(
+                (h) => h.x === hexagon.x + 2 * hr && h.y === hexagon.y
+              ) &&
+              hexagon.x + hr + hg + stageX < CANVAS_WIDTH
+            ) {
+              setHexagons([
+                ...hexagons,
+                {
+                  id: articles[hexagons.length].id,
+                  x: hexagon.x + 2 * hr,
+                  y: hexagon.y,
+                },
+              ])
+              break
+            }
+
+            // add on the top right
+            if (
+              toInsert &&
+              !hexagons.find(
+                (h) => h.x === hexagon.x + hr && h.y === hexagon.y - 1.75 * hr
+              ) &&
+              hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
+              hexagon.y - hr - hg + stageY > 0
+            ) {
+              setHexagons([
+                ...hexagons,
+                {
+                  id: articles[hexagons.length].id,
+                  x: hexagon.x + hr,
+                  y: hexagon.y - 1.75 * hr,
+                },
+              ])
+              break
+            }
+
+            // add on the bottom right
+            if (
+              toInsert &&
+              !hexagons.find(
+                (h) => h.x === hexagon.x + hr && h.y === hexagon.y + 1.75 * hr
+              ) &&
+              hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
+              hexagon.y + hr + hg + stageY < CANVAS_HEIGHT
+            ) {
+              setHexagons([
+                ...hexagons,
+                {
+                  id: articles[hexagons.length].id,
+                  x: hexagon.x + hr,
+                  y: hexagon.y + 1.75 * hr,
+                },
+              ])
+              break
+            }
+
+            // add on the top left
+            if (
+              toInsert &&
+              !hexagons.find(
+                (h) => h.x === hexagon.x - hr && h.y === hexagon.y - 1.75 * hr
+              ) &&
+              hexagon.x - hr - hg + stageX > 0 &&
+              hexagon.y - hr - hg + stageY > 0
+            ) {
+              setHexagons([
+                ...hexagons,
+                {
+                  id: articles[hexagons.length].id,
+                  x: hexagon.x - hr,
+                  y: hexagon.y - 1.75 * hr,
+                },
+              ])
+              break
+            }
+
+            // add on the bottom left
+            if (
+              toInsert &&
+              !hexagons.find(
+                (h) => h.x === hexagon.x - hr && h.y === hexagon.y + 1.75 * hr
+              ) &&
+              hexagon.x - hr - hg + stageX > 0 &&
+              hexagon.y + hr + hg + stageY < CANVAS_HEIGHT
+            ) {
+              setHexagons([
+                ...hexagons,
+                {
+                  id: articles[hexagons.length].id,
+                  x: hexagon.x - hr,
+                  y: hexagon.y + 1.75 * hr,
+                },
+              ])
+              break
             }
           }
-
-          // checkAndAddHexes(hexs, articles, { x: stageX, y: stageY })
-
-          // const len = Object.keys(hexs).length
-          // if (len >= articles.length) return
-          // Object.values(hexs).forEach((pivot) => {
-          // if (
-          //   // !hexs[`${pivot.x - 2 * hr}:${pivot.y}`] &&
-          //   pivot.x - hr - hg > 0 + stageX
-          //   ) {
-          //   // const c = { x: p.x - 2 * hr, y: p.y }
-          //   const len = Object.keys(hexs).length
-          //   if (articles[len]) {
-          //     // createHex(c, articles[len])
-          //     console.log('on the left')
-          //     // hexs[`${c.x}:${c.y}`] = c
-          //   }
-          // }
-          // if (spaceOnTheRight(hexs, p, bounds)) {
-          //   const c = { x: p.x + 2 * hr, y: p.y }
-          //   const len = Object.keys(hexs).length
-          //   if (articles[len]) {
-          //     // createHex(c, articles[len])
-          //     console.log('on the right')
-          //     hexs[`${c.x}:${c.y}`] = c
-          //   }
-          // }
-          // if (spaceOnTheTopRight(hexs, p, bounds)) {
-          //   const c = { x: p.x + hr, y: p.y - 1.75 * hr }
-          //   const len = Object.keys(hexs).length
-          //   if (articles[len]) {
-          //     // createHex(c, articles[len])
-          //     console.log('on the top right')
-          //     hexs[`${c.x}:${c.y}`] = c
-          //   }
-          // }
-          // if (spaceOnTheBottomRight(hexs, p, bounds)) {
-          //   const c = { x: p.x + hr, y: p.y + 1.75 * hr }
-          //   const len = Object.keys(hexs).length
-          //   if (articles[len]) {
-          //     // createHex(c, articles[len])
-          //     console.log('on the bottom right')
-          //     hexs[`${c.x}:${c.y}`] = c
-          //   }
-          // }
-          // if (spaceOnTheTopLeft(hexs, p, bounds)) {
-          //   const c = { x: p.x - hr, y: p.y - 1.75 * hr }
-          //   const len = Object.keys(hexs).length
-          //   if (articles[len]) {
-          //     // createHex(c, articles[len])
-          //     console.log('on the top left')
-          //     hexs[`${c.x}:${c.y}`] = c
-          //   }
-          // }
-          // if (spaceOnTheBottomLeft(hexs, p, bounds)) {
-          //   const c = { x: p.x - hr, y: p.y + 1.75 * hr }
-          //   const len = Object.keys(hexs).length
-          //   if (articles[len]) {
-          //     // createHex(c, articles[len])
-          //     console.log('on the bottom left')
-          //     hexs[`${c.x}:${c.y}`] = c
-          //   }
-          // }
-          // })
         }}
       >
         <Layer>
