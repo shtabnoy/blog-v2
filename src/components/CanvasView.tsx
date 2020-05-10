@@ -230,37 +230,68 @@ interface Hexagon {
   id: string
   x: number
   y: number
+  coverImage?: HTMLImageElement
+}
+
+const addHex = (
+  hexagon: Hexagon,
+  hexagons: Hexagon[],
+  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>,
+  url: string
+) => {
+  // update hexagons
+  setHexagons([...hexagons, hexagon])
+}
+
+const addImage = (
+  url: string,
+  newHex: Hexagon,
+  hexagons: Hexagon[],
+  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>
+) => {}
+
+interface Hexagons {
+  [id: string]: Hexagon
 }
 
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   const [image, setImage] = useState<CanvasImageSource>(null)
+  // const [hexagons, setHexagons] = useState<Hexagons>(
+  //  { [articles[0].id]: {
+  //     id: articles[0].id,
+  //     x: CANVAS_WIDTH / 2,
+  //     y: CANVAS_HEIGHT / 2,
+  //     coverImage: null,
+  //   }
+  // })
   const [hexagons, setHexagons] = useState<Hexagon[]>([
     {
       id: articles[0].id,
       x: CANVAS_WIDTH / 2,
       y: CANVAS_HEIGHT / 2,
+      coverImage: null,
     },
   ])
 
   // All the hexes stored in map
-  const hexs: Hexs = {}
+  // const hexs: Hexs = {}
 
-  useEffect(() => {
-    const url = articles[0].cover.url
-    const img = new window.Image()
-    img.src = `${baseUrl}${url}`
-    img.onload = () => setImage(img)
-  }, [])
+  // useEffect(() => {
+  //   const url = articles[0].cover.url
+  //   const img = new window.Image()
+  //   img.src = `${baseUrl}${url}`
+  //   img.onload = () => setImage(img)
+  // }, [])
 
-  const iHexCoords = {
-    x: CANVAS_WIDTH / 2,
-    y: CANVAS_HEIGHT / 2,
-  }
+  // const iHexCoords = {
+  //   x: CANVAS_WIDTH / 2,
+  //   y: CANVAS_HEIGHT / 2,
+  // }
 
   // Initial hex
-  hexs[`${iHexCoords.x}:${iHexCoords.y}`] = iHexCoords
+  // hexs[`${iHexCoords.x}:${iHexCoords.y}`] = iHexCoords
 
-  // TODO: check with more hexes. 20 or so
+  console.log(hexagons)
 
   return (
     <React.Fragment>
@@ -287,14 +318,33 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               ) &&
               hexagon.x - hr - hg + stageX > 0
             ) {
-              setHexagons([
-                ...hexagons,
-                {
-                  id: articles[hexagons.length].id,
-                  x: hexagon.x - 2 * hr,
-                  y: hexagon.y,
-                },
-              ])
+              const newHex = {
+                id: articles[hexagons.length].id,
+                x: hexagon.x - 2 * hr,
+                y: hexagon.y,
+              }
+              setHexagons([...hexagons, newHex])
+
+              // const img = new window.Image()
+              // img.src = `${baseUrl}${toInsert.cover.url}`
+              // console.log('adding hex')
+
+              // img.onload = () => {
+              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
+
+              //   if (index) {
+              //     console.log('adding image', hexagons)
+              //     setHexagons([
+              //       ...hexagons.slice(0, index),
+              //       {
+              //         ...newHex,
+              //         coverImage: img,
+              //       },
+              //       ...hexagons.slice(index + 1),
+              //     ])
+              //   }
+              // }
+
               break
             }
 
@@ -306,14 +356,32 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               ) &&
               hexagon.x + hr + hg + stageX < CANVAS_WIDTH
             ) {
-              setHexagons([
-                ...hexagons,
-                {
-                  id: articles[hexagons.length].id,
-                  x: hexagon.x + 2 * hr,
-                  y: hexagon.y,
-                },
-              ])
+              const newHex = {
+                id: articles[hexagons.length].id,
+                x: hexagon.x + 2 * hr,
+                y: hexagon.y,
+              }
+              setHexagons([...hexagons, newHex])
+
+              // const img = new window.Image()
+              // img.src = `${baseUrl}${toInsert.cover.url}`
+              // console.log('adding hex')
+
+              // img.onload = () => {
+              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
+
+              //   if (index) {
+              //     console.log('adding image', hexagons)
+              //     setHexagons([
+              //       ...hexagons.slice(0, index),
+              //       {
+              //         ...newHex,
+              //         coverImage: img,
+              //       },
+              //       ...hexagons.slice(index + 1),
+              //     ])
+              //   }
+              // }
               break
             }
 
@@ -326,14 +394,32 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
               hexagon.y - hr - hg + stageY > 0
             ) {
-              setHexagons([
-                ...hexagons,
-                {
-                  id: articles[hexagons.length].id,
-                  x: hexagon.x + hr,
-                  y: hexagon.y - 1.75 * hr,
-                },
-              ])
+              const newHex = {
+                id: articles[hexagons.length].id,
+                x: hexagon.x + hr,
+                y: hexagon.y - 1.75 * hr,
+              }
+              setHexagons([...hexagons, newHex])
+
+              // const img = new window.Image()
+              // img.src = `${baseUrl}${toInsert.cover.url}`
+              // console.log('adding hex')
+
+              // img.onload = () => {
+              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
+
+              //   if (index) {
+              //     console.log('adding image', hexagons)
+              //     setHexagons([
+              //       ...hexagons.slice(0, index),
+              //       {
+              //         ...newHex,
+              //         coverImage: img,
+              //       },
+              //       ...hexagons.slice(index + 1),
+              //     ])
+              //   }
+              // }
               break
             }
 
@@ -346,14 +432,32 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
               hexagon.y + hr + hg + stageY < CANVAS_HEIGHT
             ) {
-              setHexagons([
-                ...hexagons,
-                {
-                  id: articles[hexagons.length].id,
-                  x: hexagon.x + hr,
-                  y: hexagon.y + 1.75 * hr,
-                },
-              ])
+              const newHex = {
+                id: articles[hexagons.length].id,
+                x: hexagon.x + hr,
+                y: hexagon.y + 1.75 * hr,
+              }
+              setHexagons([...hexagons, newHex])
+
+              // const img = new window.Image()
+              // img.src = `${baseUrl}${toInsert.cover.url}`
+              // console.log('adding hex')
+
+              // img.onload = () => {
+              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
+
+              //   if (index) {
+              //     console.log('adding image', hexagons)
+              //     setHexagons([
+              //       ...hexagons.slice(0, index),
+              //       {
+              //         ...newHex,
+              //         coverImage: img,
+              //       },
+              //       ...hexagons.slice(index + 1),
+              //     ])
+              //   }
+              // }
               break
             }
 
@@ -366,14 +470,32 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               hexagon.x - hr - hg + stageX > 0 &&
               hexagon.y - hr - hg + stageY > 0
             ) {
-              setHexagons([
-                ...hexagons,
-                {
-                  id: articles[hexagons.length].id,
-                  x: hexagon.x - hr,
-                  y: hexagon.y - 1.75 * hr,
-                },
-              ])
+              const newHex = {
+                id: articles[hexagons.length].id,
+                x: hexagon.x - hr,
+                y: hexagon.y - 1.75 * hr,
+              }
+              setHexagons([...hexagons, newHex])
+
+              // const img = new window.Image()
+              // img.src = `${baseUrl}${toInsert.cover.url}`
+              // console.log('adding hex')
+
+              // img.onload = () => {
+              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
+
+              //   if (index) {
+              //     console.log('adding image', hexagons)
+              //     setHexagons([
+              //       ...hexagons.slice(0, index),
+              //       {
+              //         ...newHex,
+              //         coverImage: img,
+              //       },
+              //       ...hexagons.slice(index + 1),
+              //     ])
+              //   }
+              // }
               break
             }
 
@@ -386,14 +508,32 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               hexagon.x - hr - hg + stageX > 0 &&
               hexagon.y + hr + hg + stageY < CANVAS_HEIGHT
             ) {
-              setHexagons([
-                ...hexagons,
-                {
-                  id: articles[hexagons.length].id,
-                  x: hexagon.x - hr,
-                  y: hexagon.y + 1.75 * hr,
-                },
-              ])
+              const newHex = {
+                id: articles[hexagons.length].id,
+                x: hexagon.x - hr,
+                y: hexagon.y + 1.75 * hr,
+              }
+              setHexagons([...hexagons, newHex])
+
+              // const img = new window.Image()
+              // img.src = `${baseUrl}${toInsert.cover.url}`
+              // console.log('adding hex')
+
+              // img.onload = () => {
+              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
+
+              //   if (index) {
+              //     console.log('adding image', hexagons)
+              //     setHexagons([
+              //       ...hexagons.slice(0, index),
+              //       {
+              //         ...newHex,
+              //         coverImage: img,
+              //       },
+              //       ...hexagons.slice(index + 1),
+              //     ])
+              //   }
+              // }
               break
             }
           }
@@ -405,6 +545,7 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               <RegularPolygon
                 radius={hr}
                 sides={6}
+                stroke="rgba(255,255,255,0.9)"
                 fillLinearGradientStartPoint={{
                   x: 0,
                   y: -hr,
@@ -415,13 +556,13 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
                 }}
                 fillLinearGradientColorStops={[0.3, grad1, 1, grad2]}
               />
-              {image && (
+              {hexagon.coverImage && (
                 <Image
                   offset={{
-                    x: Number(image.width) / 2,
-                    y: Number(image.width) / 2,
+                    x: Number(hexagon.coverImage.width) / 2,
+                    y: Number(hexagon.coverImage.width) / 2,
                   }}
-                  image={image}
+                  image={hexagon.coverImage}
                 />
               )}
             </Group>

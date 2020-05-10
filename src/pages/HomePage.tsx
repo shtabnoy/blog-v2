@@ -96,6 +96,10 @@ const HomePage: React.FC = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
 
+  const articles = data.articles.filter((article: any) =>
+    article.cover.url.endsWith('.svg')
+  )
+
   return (
     <React.Fragment>
       <Header>
@@ -107,9 +111,7 @@ const HomePage: React.FC = () => {
       </Header>
       <CanvasView
         // TODO: proper handling of articles; not only with an svg cover
-        articles={data.articles.filter((article: any) =>
-          article.cover.url.endsWith('.svg')
-        )}
+        articles={articles}
       />
     </React.Fragment>
   )
