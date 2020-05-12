@@ -10,7 +10,6 @@ import {
   Image,
   Group,
 } from 'react-konva'
-import Konva from 'konva'
 
 const baseUrl = 'http://localhost:1337' // TODO: make it dependable on .env
 
@@ -91,207 +90,53 @@ const backgroundGrad1 = '#3542A8'
 const backgroundGrad2 = '#841E71'
 const shadowColor = '#100d23'
 
-// const onHexEnter = (group: paper.Group) => {
-//   // paper.view.
-//   document.body.style.cursor = 'pointer'
-//   let scale = 1
-//   group.applyMatrix = false
-
-//   let hex = group.lastChild
-//   // hex.strokeColor = new paper.Color(secondary)
-//   // hex.strokeWidth = 4
-
-//   shadow = new paper.Path.RegularPolygon(group.position, 6, hr)
-//   shadow.applyMatrix = false
-//   shadow.shadowColor = new paper.Color(shadowColor)
-//   shadow.shadowBlur = 14
-//   shadow.shadowOffset = new paper.Point(12, 10)
-//   shadow.fillColor = new paper.Color(shadowColor)
-//   shadow.sendToBack()
-
-//   group.onFrame = () => {
-//     if (scale >= 1.1) {
-//       group.onFrame = undefined
-//       return
-//     }
-//     scale += scaleStep
-//     group.scaling = new paper.Point(scale, scale)
-//     shadow.scaling = new paper.Point(scale, scale)
-//   }
-// }
-
-// const onHexLeave = (group: paper.Group) => {
-//   document.body.style.cursor = 'default'
-//   let scale = 1.1
-//   group.applyMatrix = false
-//   // let hex = group.lastChild
-//   // hex.strokeColor = new paper.Color(secondary)
-//   // hex.strokeWidth = 0
-//   group.onFrame = () => {
-//     if (scale <= 1) {
-//       group.onFrame = undefined
-//       return
-//     }
-//     scale -= scaleStep
-//     group.scaling = new paper.Point(scale, scale)
-//   }
-//   shadow.remove()
-// }
-
-// const importSvg = (url: string): Promise<paper.Item> => {
-//   return new Promise((resolve, reject) => {
-//     paper.project.importSVG(url, {
-//       onLoad: (item: paper.Item) => {
-//         resolve(item)
-//       },
-//       onError: (error: any) => {
-//         reject(error)
-//       },
-//     })
-//   })
-// }
-
-// const createHex = async (c: Point, article: Article) => {
-//   const { cover, category, title } = article
-//   const catPlaceholder = await importSvg(`<svg></svg>`)
-//   let covImg = null
-//   let catImg = null
-//   try {
-//     covImg =
-//       cover && cover.url
-//         ? await importSvg(`${baseUrl}${article.cover.url}`)
-//         : catPlaceholder
-//   } catch (error) {
-//     console.log('Error loading cover image:', error)
-//   }
-
-//   try {
-//     catImg =
-//       category && category.image && category.image.url
-//         ? await importSvg(`${baseUrl}${category.image && category.image.url}`)
-//         : catPlaceholder
-//   } catch (error) {
-//     console.log('Error loading category image:', error)
-//   }
-
-//   const p = new paper.Point(c.x, c.y)
-//   const h = new paper.Path.RegularPolygon(p, 6, hr)
-
-//   covImg.position = p
-//   catImg.position = new paper.Point(p.x, p.y + 150)
-//   const titleText = new paper.PointText(new paper.Point(p.x, p.y - 80))
-//   titleText.content = title
-//   titleText.fontFamily = 'Comfortaa'
-//   titleText.justification = 'center'
-//   titleText.fontSize = 18
-//   titleText.fillColor = new paper.Color('#fff')
-//   const group = new paper.Group([titleText, covImg, catImg, h])
-//   h.fillColor = {
-//     gradient: {
-//       stops: [
-//         [grad1, 0.3],
-//         [grad2, 1],
-//       ],
-//       radial: false,
-//     },
-//     origin: h.bounds.topCenter,
-//     destination: h.bounds.bottomCenter,
-//   } as any
-//   h.strokeColor = new paper.Color('white')
-//   h.strokeWidth = 2
-//   h.blendMode = 'destination-atop'
-//   group.opacity = 0
-//   group.onMouseEnter = () => onHexEnter(group)
-//   group.onMouseLeave = () => onHexLeave(group)
-// }
-
-// const createCategoryHex = async (c: Point) => {
-//   const r = 50
-//   const p = new paper.Point(c.x - r, c.y + r)
-//   const h = new paper.Path.RegularPolygon(p, 6, r)
-
-//   h.fillColor = {
-//     gradient: {
-//       stops: [
-//         [grad1, 0.3],
-//         [grad2, 1],
-//       ],
-//       radial: false,
-//     },
-//     origin: h.bounds.topCenter,
-//     destination: h.bounds.bottomCenter,
-//   } as any
-//   h.strokeColor = new paper.Color('white')
-//   h.strokeWidth = 2
-//   h.name = 'categoryHex'
-// }
-
 interface Hexagon {
   id: string
   x: number
   y: number
-  coverImage?: HTMLImageElement
+  coverUrl?: string
 }
-
-const addHex = (
-  hexagon: Hexagon,
-  hexagons: Hexagon[],
-  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>,
-  url: string
-) => {
-  // update hexagons
-  setHexagons([...hexagons, hexagon])
-}
-
-const addImage = (
-  url: string,
-  newHex: Hexagon,
-  hexagons: Hexagon[],
-  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>
-) => {}
 
 interface Hexagons {
   [id: string]: Hexagon
 }
 
+interface Images {
+  [id: string]: HTMLImageElement
+}
+
+const loadImage = (url: string) =>
+  new Promise((resolve, reject) => {
+    const img = new window.Image()
+    img.src = `${baseUrl}${url}`
+    img.onload = (event) => resolve(event.target)
+    img.onerror = (err) => reject(err)
+  })
+
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
-  const [image, setImage] = useState<CanvasImageSource>(null)
-  // const [hexagons, setHexagons] = useState<Hexagons>(
-  //  { [articles[0].id]: {
-  //     id: articles[0].id,
-  //     x: CANVAS_WIDTH / 2,
-  //     y: CANVAS_HEIGHT / 2,
-  //     coverImage: null,
-  //   }
-  // })
+  // TODO: Preload all images into a hashmap
+  // and switch to a hashmap for hexagons with a key ${x}${y}
+  const [images, setImages] = useState<Images>({})
   const [hexagons, setHexagons] = useState<Hexagon[]>([
     {
       id: articles[0].id,
       x: CANVAS_WIDTH / 2,
       y: CANVAS_HEIGHT / 2,
-      coverImage: null,
+      coverUrl: articles[0].cover.url,
     },
   ])
 
-  // All the hexes stored in map
-  // const hexs: Hexs = {}
-
-  // useEffect(() => {
-  //   const url = articles[0].cover.url
-  //   const img = new window.Image()
-  //   img.src = `${baseUrl}${url}`
-  //   img.onload = () => setImage(img)
-  // }, [])
-
-  // const iHexCoords = {
-  //   x: CANVAS_WIDTH / 2,
-  //   y: CANVAS_HEIGHT / 2,
-  // }
-
-  // Initial hex
-  // hexs[`${iHexCoords.x}:${iHexCoords.y}`] = iHexCoords
-
-  console.log(hexagons)
+  useEffect(() => {
+    const getImg = async () => {
+      const lastHex = hexagons[hexagons.length - 1]
+      const image = await loadImage(lastHex.coverUrl)
+      setImages((images) => ({
+        ...images,
+        [lastHex.id]: image as HTMLImageElement,
+      }))
+    }
+    getImg()
+  }, [hexagons])
 
   return (
     <React.Fragment>
@@ -320,31 +165,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
             ) {
               const newHex = {
                 id: articles[hexagons.length].id,
+                coverUrl: articles[hexagons.length].cover.url,
                 x: hexagon.x - 2 * hr,
                 y: hexagon.y,
               }
               setHexagons([...hexagons, newHex])
-
-              // const img = new window.Image()
-              // img.src = `${baseUrl}${toInsert.cover.url}`
-              // console.log('adding hex')
-
-              // img.onload = () => {
-              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
-
-              //   if (index) {
-              //     console.log('adding image', hexagons)
-              //     setHexagons([
-              //       ...hexagons.slice(0, index),
-              //       {
-              //         ...newHex,
-              //         coverImage: img,
-              //       },
-              //       ...hexagons.slice(index + 1),
-              //     ])
-              //   }
-              // }
-
               break
             }
 
@@ -358,30 +183,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
             ) {
               const newHex = {
                 id: articles[hexagons.length].id,
+                coverUrl: articles[hexagons.length].cover.url,
                 x: hexagon.x + 2 * hr,
                 y: hexagon.y,
               }
               setHexagons([...hexagons, newHex])
-
-              // const img = new window.Image()
-              // img.src = `${baseUrl}${toInsert.cover.url}`
-              // console.log('adding hex')
-
-              // img.onload = () => {
-              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
-
-              //   if (index) {
-              //     console.log('adding image', hexagons)
-              //     setHexagons([
-              //       ...hexagons.slice(0, index),
-              //       {
-              //         ...newHex,
-              //         coverImage: img,
-              //       },
-              //       ...hexagons.slice(index + 1),
-              //     ])
-              //   }
-              // }
               break
             }
 
@@ -396,30 +202,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
             ) {
               const newHex = {
                 id: articles[hexagons.length].id,
+                coverUrl: articles[hexagons.length].cover.url,
                 x: hexagon.x + hr,
                 y: hexagon.y - 1.75 * hr,
               }
               setHexagons([...hexagons, newHex])
-
-              // const img = new window.Image()
-              // img.src = `${baseUrl}${toInsert.cover.url}`
-              // console.log('adding hex')
-
-              // img.onload = () => {
-              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
-
-              //   if (index) {
-              //     console.log('adding image', hexagons)
-              //     setHexagons([
-              //       ...hexagons.slice(0, index),
-              //       {
-              //         ...newHex,
-              //         coverImage: img,
-              //       },
-              //       ...hexagons.slice(index + 1),
-              //     ])
-              //   }
-              // }
               break
             }
 
@@ -434,30 +221,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
             ) {
               const newHex = {
                 id: articles[hexagons.length].id,
+                coverUrl: articles[hexagons.length].cover.url,
                 x: hexagon.x + hr,
                 y: hexagon.y + 1.75 * hr,
               }
               setHexagons([...hexagons, newHex])
-
-              // const img = new window.Image()
-              // img.src = `${baseUrl}${toInsert.cover.url}`
-              // console.log('adding hex')
-
-              // img.onload = () => {
-              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
-
-              //   if (index) {
-              //     console.log('adding image', hexagons)
-              //     setHexagons([
-              //       ...hexagons.slice(0, index),
-              //       {
-              //         ...newHex,
-              //         coverImage: img,
-              //       },
-              //       ...hexagons.slice(index + 1),
-              //     ])
-              //   }
-              // }
               break
             }
 
@@ -472,30 +240,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
             ) {
               const newHex = {
                 id: articles[hexagons.length].id,
+                coverUrl: articles[hexagons.length].cover.url,
                 x: hexagon.x - hr,
                 y: hexagon.y - 1.75 * hr,
               }
               setHexagons([...hexagons, newHex])
-
-              // const img = new window.Image()
-              // img.src = `${baseUrl}${toInsert.cover.url}`
-              // console.log('adding hex')
-
-              // img.onload = () => {
-              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
-
-              //   if (index) {
-              //     console.log('adding image', hexagons)
-              //     setHexagons([
-              //       ...hexagons.slice(0, index),
-              //       {
-              //         ...newHex,
-              //         coverImage: img,
-              //       },
-              //       ...hexagons.slice(index + 1),
-              //     ])
-              //   }
-              // }
               break
             }
 
@@ -510,30 +259,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
             ) {
               const newHex = {
                 id: articles[hexagons.length].id,
+                coverUrl: articles[hexagons.length].cover.url,
                 x: hexagon.x - hr,
                 y: hexagon.y + 1.75 * hr,
               }
               setHexagons([...hexagons, newHex])
-
-              // const img = new window.Image()
-              // img.src = `${baseUrl}${toInsert.cover.url}`
-              // console.log('adding hex')
-
-              // img.onload = () => {
-              //   const index = hexagons.findIndex((hex) => hex.id === newHex.id)
-
-              //   if (index) {
-              //     console.log('adding image', hexagons)
-              //     setHexagons([
-              //       ...hexagons.slice(0, index),
-              //       {
-              //         ...newHex,
-              //         coverImage: img,
-              //       },
-              //       ...hexagons.slice(index + 1),
-              //     ])
-              //   }
-              // }
               break
             }
           }
@@ -556,13 +286,13 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
                 }}
                 fillLinearGradientColorStops={[0.3, grad1, 1, grad2]}
               />
-              {hexagon.coverImage && (
+              {images[hexagon.id] && (
                 <Image
                   offset={{
-                    x: Number(hexagon.coverImage.width) / 2,
-                    y: Number(hexagon.coverImage.width) / 2,
+                    x: Number(images[hexagon.id].width) / 2,
+                    y: Number(images[hexagon.id].width) / 2,
                   }}
-                  image={hexagon.coverImage}
+                  image={images[hexagon.id]}
                 />
               )}
             </Group>
