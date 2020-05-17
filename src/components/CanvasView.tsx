@@ -1,6 +1,6 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   Stage,
   Layer,
@@ -113,9 +113,33 @@ const loadImage = (url: string) =>
     img.onerror = (err) => reject(err)
   })
 
+const addHex = (
+  article: Article,
+  hexagons: Hexagon[],
+  x: number,
+  y: number,
+  coordsCondition: boolean,
+  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>
+): boolean => {
+  if (
+    article &&
+    !hexagons.find((h) => h.x === x && h.y === y) &&
+    coordsCondition
+  ) {
+    const newHex = {
+      id: article.id,
+      coverUrl: article.cover.url,
+      x: x,
+      y: y,
+    }
+    setHexagons([...hexagons, newHex])
+    return true
+  }
+  return false
+}
+
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
-  // TODO: Preload all images into a hashmap
-  // and switch to a hashmap for hexagons with a key ${x}${y}
+  const ref = useRef(null)
   const [images, setImages] = useState<Images>({})
   const [hexagons, setHexagons] = useState<Hexagon[]>([
     {
@@ -125,6 +149,10 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
       coverUrl: articles[0].cover.url,
     },
   ])
+
+  // useEffect(() => {
+  //   ref.current.
+  // }, [])
 
   useEffect(() => {
     const getImg = async () => {
@@ -138,6 +166,8 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     getImg()
   }, [hexagons])
 
+  // console.log(hexagons)
+
   return (
     <React.Fragment>
       <Stage
@@ -146,130 +176,111 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         style={{
           background: `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`,
         }}
-        draggable
-        onDragMove={(event) => {
-          const stageX = event.target.getStage().attrs.x
-          const stageY = event.target.getStage().attrs.y
-
-          if (hexagons.length >= articles.length) return
-          for (let hexagon of hexagons) {
-            let toInsert = articles[hexagons.length]
-
-            // add on the left
-            if (
-              toInsert &&
-              !hexagons.find(
-                (h) => h.x === hexagon.x - 2 * hr && h.y === hexagon.y
-              ) &&
-              hexagon.x - hr - hg + stageX > 0
-            ) {
-              const newHex = {
-                id: articles[hexagons.length].id,
-                coverUrl: articles[hexagons.length].cover.url,
-                x: hexagon.x - 2 * hr,
-                y: hexagon.y,
-              }
-              setHexagons([...hexagons, newHex])
-              break
-            }
-
-            // add on the right
-            if (
-              toInsert &&
-              !hexagons.find(
-                (h) => h.x === hexagon.x + 2 * hr && h.y === hexagon.y
-              ) &&
-              hexagon.x + hr + hg + stageX < CANVAS_WIDTH
-            ) {
-              const newHex = {
-                id: articles[hexagons.length].id,
-                coverUrl: articles[hexagons.length].cover.url,
-                x: hexagon.x + 2 * hr,
-                y: hexagon.y,
-              }
-              setHexagons([...hexagons, newHex])
-              break
-            }
-
-            // add on the top right
-            if (
-              toInsert &&
-              !hexagons.find(
-                (h) => h.x === hexagon.x + hr && h.y === hexagon.y - 1.75 * hr
-              ) &&
-              hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
-              hexagon.y - hr - hg + stageY > 0
-            ) {
-              const newHex = {
-                id: articles[hexagons.length].id,
-                coverUrl: articles[hexagons.length].cover.url,
-                x: hexagon.x + hr,
-                y: hexagon.y - 1.75 * hr,
-              }
-              setHexagons([...hexagons, newHex])
-              break
-            }
-
-            // add on the bottom right
-            if (
-              toInsert &&
-              !hexagons.find(
-                (h) => h.x === hexagon.x + hr && h.y === hexagon.y + 1.75 * hr
-              ) &&
-              hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
-              hexagon.y + hr + hg + stageY < CANVAS_HEIGHT
-            ) {
-              const newHex = {
-                id: articles[hexagons.length].id,
-                coverUrl: articles[hexagons.length].cover.url,
-                x: hexagon.x + hr,
-                y: hexagon.y + 1.75 * hr,
-              }
-              setHexagons([...hexagons, newHex])
-              break
-            }
-
-            // add on the top left
-            if (
-              toInsert &&
-              !hexagons.find(
-                (h) => h.x === hexagon.x - hr && h.y === hexagon.y - 1.75 * hr
-              ) &&
-              hexagon.x - hr - hg + stageX > 0 &&
-              hexagon.y - hr - hg + stageY > 0
-            ) {
-              const newHex = {
-                id: articles[hexagons.length].id,
-                coverUrl: articles[hexagons.length].cover.url,
-                x: hexagon.x - hr,
-                y: hexagon.y - 1.75 * hr,
-              }
-              setHexagons([...hexagons, newHex])
-              break
-            }
-
-            // add on the bottom left
-            if (
-              toInsert &&
-              !hexagons.find(
-                (h) => h.x === hexagon.x - hr && h.y === hexagon.y + 1.75 * hr
-              ) &&
-              hexagon.x - hr - hg + stageX > 0 &&
-              hexagon.y + hr + hg + stageY < CANVAS_HEIGHT
-            ) {
-              const newHex = {
-                id: articles[hexagons.length].id,
-                coverUrl: articles[hexagons.length].cover.url,
-                x: hexagon.x - hr,
-                y: hexagon.y + 1.75 * hr,
-              }
-              setHexagons([...hexagons, newHex])
-              break
-            }
-          }
-        }}
+        // draggable
       >
-        <Layer>
+        <Layer
+          ref={ref}
+          // width={window.innerWidth}
+          // height={window.innerHeight}
+          draggable
+          onDragMove={(event) => {
+            const stageX = event.target.getLayer().attrs.x
+            const stageY = event.target.getLayer().attrs.y
+
+            if (hexagons.length >= articles.length) return
+            for (let hexagon of hexagons) {
+              let toInsert = articles[hexagons.length]
+
+              // add on the left
+              if (
+                addHex(
+                  toInsert,
+                  hexagons,
+                  hexagon.x - 2 * hr,
+                  hexagon.y,
+                  hexagon.x - hr - hg + stageX > 0,
+                  setHexagons
+                )
+              ) {
+                break
+              }
+
+              // add on the right
+              if (
+                addHex(
+                  toInsert,
+                  hexagons,
+                  hexagon.x + 2 * hr,
+                  hexagon.y,
+                  hexagon.x + hr + hg + stageX < CANVAS_WIDTH,
+                  setHexagons
+                )
+              ) {
+                break
+              }
+
+              // add on the top right
+              if (
+                addHex(
+                  toInsert,
+                  hexagons,
+                  hexagon.x + hr,
+                  hexagon.y - 1.75 * hr,
+                  hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
+                    hexagon.y - hr - hg + stageY > 0,
+                  setHexagons
+                )
+              ) {
+                break
+              }
+
+              // add on the bottom right
+              if (
+                addHex(
+                  toInsert,
+                  hexagons,
+                  hexagon.x + hr,
+                  hexagon.y + 1.75 * hr,
+                  hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
+                    hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
+                  setHexagons
+                )
+              ) {
+                break
+              }
+
+              // add on the top left
+              if (
+                addHex(
+                  toInsert,
+                  hexagons,
+                  hexagon.x - hr,
+                  hexagon.y - 1.75 * hr,
+                  hexagon.x - hr - hg + stageX > 0 &&
+                    hexagon.y - hr - hg + stageY > 0,
+                  setHexagons
+                )
+              ) {
+                break
+              }
+
+              // add on the bottom left
+              if (
+                addHex(
+                  toInsert,
+                  hexagons,
+                  hexagon.x - hr,
+                  hexagon.y + 1.75 * hr,
+                  hexagon.x - hr - hg + stageX > 0 &&
+                    hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
+                  setHexagons
+                )
+              ) {
+                break
+              }
+            }
+          }}
+        >
           {hexagons.map((hexagon) => (
             <Group key={hexagon.id} x={hexagon.x} y={hexagon.y}>
               <RegularPolygon
@@ -297,6 +308,15 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               )}
             </Group>
           ))}
+        </Layer>
+        <Layer>
+          <RegularPolygon
+            x={CANVAS_WIDTH - 100}
+            y={100}
+            radius={50}
+            sides={6}
+            stroke="black"
+          />
         </Layer>
       </Stage>
     </React.Fragment>
