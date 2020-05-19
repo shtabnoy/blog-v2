@@ -263,6 +263,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
       scaleY: 1.1,
       duration: 0.1,
     })
+    const hex = event.currentTarget.children[0]
+    hex.setShadowColor('black')
+    hex.setShadowBlur(10)
+    hex.setShadowOffset({ x: 10, y: 10 })
+    hex.setShadowOpacity(0.5)
   }
 
   const scaleDown = (event: any) => {
@@ -271,6 +276,11 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
       scaleY: 1,
       duration: 0.1,
     })
+    const hex = event.currentTarget.children[0]
+    hex.setShadowColor('black')
+    hex.setShadowBlur(0)
+    hex.setShadowOffset({ x: 0, y: 0 })
+    hex.setShadowOpacity(0)
   }
 
   useEffect(() => {
@@ -320,6 +330,10 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
                   y: hr,
                 }}
                 fillLinearGradientColorStops={[0.3, grad1, 1, grad2]}
+                // shadowColor="black"
+                // shadowBlur={0}
+                // shadowOffset={{ x: 10, y: 10 }}
+                // shadowOpacity={0.5}
               />
               {hexagon.text && (
                 <Text
