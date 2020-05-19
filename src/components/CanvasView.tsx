@@ -95,6 +95,7 @@ interface Hexagon {
   x: number
   y: number
   coverUrl?: string
+  text?: string
 }
 
 interface Hexagons {
@@ -131,6 +132,7 @@ const addHex = (
       coverUrl: article.cover.url,
       x: x,
       y: y,
+      text: article.title,
     }
     setHexagons([...hexagons, newHex])
     return true
@@ -138,8 +140,109 @@ const addHex = (
   return false
 }
 
+const onDragMove = (
+  event: any,
+  hexagons: Hexagon[],
+  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>,
+  articles: Article[]
+) => {
+  const stageX = event.target.getStage().attrs.x
+  const stageY = event.target.getStage().attrs.y
+
+  if (hexagons.length >= articles.length) return
+  for (let hexagon of hexagons) {
+    let toInsert = articles[hexagons.length]
+
+    // add on the left
+    if (
+      addHex(
+        toInsert,
+        hexagons,
+        hexagon.x - 2 * hr,
+        hexagon.y,
+        hexagon.x - hr - hg + stageX > 0,
+        setHexagons
+      )
+    ) {
+      break
+    }
+
+    // add on the right
+    if (
+      addHex(
+        toInsert,
+        hexagons,
+        hexagon.x + 2 * hr,
+        hexagon.y,
+        hexagon.x + hr + hg + stageX < CANVAS_WIDTH,
+        setHexagons
+      )
+    ) {
+      break
+    }
+
+    // add on the top right
+    if (
+      addHex(
+        toInsert,
+        hexagons,
+        hexagon.x + hr,
+        hexagon.y - 1.75 * hr,
+        hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
+          hexagon.y - hr - hg + stageY > 0,
+        setHexagons
+      )
+    ) {
+      break
+    }
+
+    // add on the bottom right
+    if (
+      addHex(
+        toInsert,
+        hexagons,
+        hexagon.x + hr,
+        hexagon.y + 1.75 * hr,
+        hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
+          hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
+        setHexagons
+      )
+    ) {
+      break
+    }
+
+    // add on the top left
+    if (
+      addHex(
+        toInsert,
+        hexagons,
+        hexagon.x - hr,
+        hexagon.y - 1.75 * hr,
+        hexagon.x - hr - hg + stageX > 0 && hexagon.y - hr - hg + stageY > 0,
+        setHexagons
+      )
+    ) {
+      break
+    }
+
+    // add on the bottom left
+    if (
+      addHex(
+        toInsert,
+        hexagons,
+        hexagon.x - hr,
+        hexagon.y + 1.75 * hr,
+        hexagon.x - hr - hg + stageX > 0 &&
+          hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
+        setHexagons
+      )
+    ) {
+      break
+    }
+  }
+}
+
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
-  const ref = useRef(null)
   const [images, setImages] = useState<Images>({})
   const [hexagons, setHexagons] = useState<Hexagon[]>([
     {
@@ -147,12 +250,28 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
       x: CANVAS_WIDTH / 2,
       y: CANVAS_HEIGHT / 2,
       coverUrl: articles[0].cover.url,
+      text: articles[0].title,
     },
   ])
 
-  // useEffect(() => {
-  //   ref.current.
-  // }, [])
+  const scaleUp = (event: any) => {
+    // TODO: don't trigger on all children elements
+    // currentTarget is the group
+    // target is a child
+    event.currentTarget.to({
+      scaleX: 1.1,
+      scaleY: 1.1,
+      duration: 0.1,
+    })
+  }
+
+  const scaleDown = (event: any) => {
+    event.currentTarget.to({
+      scaleX: 1,
+      scaleY: 1,
+      duration: 0.1,
+    })
+  }
 
   useEffect(() => {
     const getImg = async () => {
@@ -166,8 +285,6 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
     getImg()
   }, [hexagons])
 
-  // console.log(hexagons)
-
   return (
     <React.Fragment>
       <Stage
@@ -176,113 +293,20 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         style={{
           background: `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`,
         }}
-        // draggable
+        draggable
+        onDragMove={(event) =>
+          onDragMove(event, hexagons, setHexagons, articles)
+        }
       >
-        <Layer
-          ref={ref}
-          // width={window.innerWidth}
-          // height={window.innerHeight}
-          draggable
-          onDragMove={(event) => {
-            const stageX = event.target.getLayer().attrs.x
-            const stageY = event.target.getLayer().attrs.y
-
-            if (hexagons.length >= articles.length) return
-            for (let hexagon of hexagons) {
-              let toInsert = articles[hexagons.length]
-
-              // add on the left
-              if (
-                addHex(
-                  toInsert,
-                  hexagons,
-                  hexagon.x - 2 * hr,
-                  hexagon.y,
-                  hexagon.x - hr - hg + stageX > 0,
-                  setHexagons
-                )
-              ) {
-                break
-              }
-
-              // add on the right
-              if (
-                addHex(
-                  toInsert,
-                  hexagons,
-                  hexagon.x + 2 * hr,
-                  hexagon.y,
-                  hexagon.x + hr + hg + stageX < CANVAS_WIDTH,
-                  setHexagons
-                )
-              ) {
-                break
-              }
-
-              // add on the top right
-              if (
-                addHex(
-                  toInsert,
-                  hexagons,
-                  hexagon.x + hr,
-                  hexagon.y - 1.75 * hr,
-                  hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
-                    hexagon.y - hr - hg + stageY > 0,
-                  setHexagons
-                )
-              ) {
-                break
-              }
-
-              // add on the bottom right
-              if (
-                addHex(
-                  toInsert,
-                  hexagons,
-                  hexagon.x + hr,
-                  hexagon.y + 1.75 * hr,
-                  hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
-                    hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
-                  setHexagons
-                )
-              ) {
-                break
-              }
-
-              // add on the top left
-              if (
-                addHex(
-                  toInsert,
-                  hexagons,
-                  hexagon.x - hr,
-                  hexagon.y - 1.75 * hr,
-                  hexagon.x - hr - hg + stageX > 0 &&
-                    hexagon.y - hr - hg + stageY > 0,
-                  setHexagons
-                )
-              ) {
-                break
-              }
-
-              // add on the bottom left
-              if (
-                addHex(
-                  toInsert,
-                  hexagons,
-                  hexagon.x - hr,
-                  hexagon.y + 1.75 * hr,
-                  hexagon.x - hr - hg + stageX > 0 &&
-                    hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
-                  setHexagons
-                )
-              ) {
-                break
-              }
-            }
-          }}
-        >
+        <Layer>
           {hexagons.map((hexagon) => (
-            <Group key={hexagon.id} x={hexagon.x} y={hexagon.y}>
+            <Group
+              key={hexagon.id}
+              x={hexagon.x}
+              y={hexagon.y}
+              onMouseOver={scaleUp}
+              onMouseOut={scaleDown}
+            >
               <RegularPolygon
                 radius={hr}
                 sides={6}
@@ -297,6 +321,17 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
                 }}
                 fillLinearGradientColorStops={[0.3, grad1, 1, grad2]}
               />
+              {hexagon.text && (
+                <Text
+                  text={hexagon.text}
+                  fontSize={18}
+                  width={2 * hr}
+                  offsetY={90}
+                  offsetX={hr}
+                  align={'center'}
+                  fill={'white'}
+                />
+              )}
               {images[hexagon.id] && (
                 <Image
                   offset={{
@@ -308,15 +343,6 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               )}
             </Group>
           ))}
-        </Layer>
-        <Layer>
-          <RegularPolygon
-            x={CANVAS_WIDTH - 100}
-            y={100}
-            radius={50}
-            sides={6}
-            stroke="black"
-          />
         </Layer>
       </Stage>
     </React.Fragment>
