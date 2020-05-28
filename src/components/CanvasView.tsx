@@ -1,25 +1,13 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core'
-import React, { useEffect, useState, useRef } from 'react'
-import {
-  Stage,
-  Layer,
-  Rect,
-  Text,
-  RegularPolygon,
-  Image,
-  Group,
-} from 'react-konva'
+import React, { useEffect, useState } from 'react'
+import { Stage, Layer, Text, RegularPolygon, Image, Group } from 'react-konva'
 
 const baseUrl = 'http://localhost:1337' // TODO: make it dependable on .env
 
 interface Point {
   x: number
   y: number
-}
-
-interface Hexs {
-  [key: string]: Point
 }
 
 interface Article {
@@ -42,9 +30,6 @@ interface CanvasViewProps {
 // Hex radius
 const hr = 200
 
-// Scale step
-const scaleStep = 0.015
-
 // Hex gap
 const hg = 200
 
@@ -53,7 +38,8 @@ const CANVAS_WIDTH = window.innerWidth
 const CANVAS_HEIGHT = window.innerHeight
 
 // opacity step
-const opacityStep = 0.04
+// TODO: when hex appears make it ease-in-out aminated
+// const opacityStep = 0.04
 
 // colors
 // palette 1
@@ -88,7 +74,6 @@ const grad1 = '#4456D6'
 const grad2 = '#D931BA'
 const backgroundGrad1 = '#3542A8'
 const backgroundGrad2 = '#841E71'
-const shadowColor = '#100d23'
 
 interface Hexagon {
   id: string
@@ -96,10 +81,6 @@ interface Hexagon {
   y: number
   coverUrl?: string
   text?: string
-}
-
-interface Hexagons {
-  [id: string]: Hexagon
 }
 
 interface Images {
@@ -330,10 +311,6 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
                   y: hr,
                 }}
                 fillLinearGradientColorStops={[0.3, grad1, 1, grad2]}
-                // shadowColor="black"
-                // shadowBlur={0}
-                // shadowOffset={{ x: 10, y: 10 }}
-                // shadowOpacity={0.5}
               />
               {hexagon.text && (
                 <Text

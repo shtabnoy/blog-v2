@@ -103,11 +103,11 @@ const HomePage: React.FC = () => {
   return (
     <React.Fragment>
       <Header>
-        <div className="search">
+        {/* TODO: Implement search */}
+        {/* <div className="search">
           <SearchIcon fill={'white'} />
           <input type="text" placeholder="Search article" />
-          {/* <div className="hidden-border"></div> */}
-        </div>
+        </div> */}
       </Header>
       <CanvasView
         // TODO: proper handling of articles; not only with an svg cover
