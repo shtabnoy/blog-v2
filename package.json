@@ -1,25 +1,33 @@
 {
-  "name": "pickapp",
+  "name": "blog",
   "version": "0.0.1",
-  "description": "The app that helps you with small daily deliveries",
+  "description": "Personal blog",
   "main": "index.ts",
   "scripts": {
     "test": "jest",
     "start": "webpack-dev-server --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "build:ssr": "webpack --config webpack.ssr.js"
   },
-  "author": "akido",
+  "author": "shtabnoy",
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.43",
+    "@apollo/react-common": "^3.1.4",
+    "@apollo/react-ssr": "^3.1.5",
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link-http": "^1.5.17",
     "graphql": "^15.0.0",
     "konva": "^5.0.3",
+    "node-fetch": "^2.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-icons": "^3.9.0",
     "react-konva": "^16.13.0-0",
+    "react-router": "^5.2.0",
     "react-router-dom": "^5.1.2",
     "typescript": "^3.8.3",
     "webpack-dev-server": "^3.10.3"
@@ -39,6 +47,7 @@
     "css-loader": "^3.4.2",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
+    "express": "^4.17.1",
     "file-loader": "^5.1.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
@@ -50,6 +59,7 @@
     "ts-loader": "^6.2.2",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^4.2.2",
+    "webpack-node-externals": "^1.7.2"
   }
 }

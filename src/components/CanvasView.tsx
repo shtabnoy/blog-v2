@@ -34,8 +34,8 @@ const hr = 200
 const hg = 200
 
 // canvas dimensions
-const CANVAS_WIDTH = window.innerWidth
-const CANVAS_HEIGHT = window.innerHeight
+const CANVAS_WIDTH = typeof window !== 'undefined' ? window.innerWidth : 0
+const CANVAS_HEIGHT = typeof window !== 'undefined' ? window.innerHeight : 0
 
 // opacity step
 // TODO: when hex appears make it ease-in-out aminated
@@ -89,7 +89,14 @@ interface Images {
 
 const loadImage = (url: string) =>
   new Promise((resolve, reject) => {
-    const img = new window.Image()
+    const img =
+      typeof window !== 'undefined'
+        ? new window.Image()
+        : {
+            src: '',
+            onload: () => {},
+            onerror: () => {},
+          }
     img.src = `${baseUrl}${url}`
     img.onload = (event) => resolve(event.target)
     img.onerror = (err) => reject(err)
@@ -279,8 +286,8 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   return (
     <React.Fragment>
       <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
         style={{
           background: `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`,
         }}

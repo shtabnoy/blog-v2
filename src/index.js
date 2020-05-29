@@ -6,11 +6,12 @@ import {
   InMemoryCache,
   ApolloProvider,
 } from '@apollo/client'
+import { BrowserRouter as Router } from 'react-router-dom'
 import App from './App.tsx'
 import './App.scss'
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache().restore(window.__APOLLO_STATE__),
   link: new HttpLink({
     uri: 'http://localhost:1337/graphql',
   }),
@@ -18,7 +19,9 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </ApolloProvider>,
   document.getElementById('root')
 )
