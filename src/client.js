@@ -21,6 +21,7 @@ const client = new ApolloClient({
   // }),
   // link: createHttpLink({
   uri: 'http://localhost:1337/graphql',
+  // ssrForceFetchDelay: 100,
   // }),
 })
 

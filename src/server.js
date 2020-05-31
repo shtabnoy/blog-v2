@@ -18,6 +18,11 @@ const basePort = 8080
 function Html({ content, state }) {
   return (
     <html>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Bloggy Blog</title>
+      </head>
       <body>
         <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
         <script
@@ -28,10 +33,16 @@ function Html({ content, state }) {
             )};`,
           }}
         />
+        <script src="/static/bundle.js" charSet="UTF-8" />
       </body>
     </html>
   )
 }
+
+// copy build/client js over to static folder
+app.use('/static', Express.static(path.join(process.cwd(), 'build/client')))
+
+const fun = () => {}
 
 app.use((req, res) => {
   const client = new ApolloClient({
@@ -59,7 +70,6 @@ app.use((req, res) => {
 
   // renderToStringWithData(App).then((content) => {
   //   const initialState = client.extract()
-  //   console.log(initialState)
   //   const html = <Html content={content} state={initialState} />
   //   res.status(200)
   //   res.send(`<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`)
@@ -69,7 +79,7 @@ app.use((req, res) => {
   getDataFromTree(App).then(() => {
     const content = ReactDOM.renderToString(App)
     const initialState = client.extract()
-    console.log(client.cache.extract())
+    console.log(initialState)
     const html = <Html content={content} state={initialState} />
     res.status(200)
     res.send(`<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`)
