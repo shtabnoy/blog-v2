@@ -3,10 +3,10 @@ const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   mode: 'production',
-  entry: ['./src/apollo.ssr.js'],
+  entry: ['./src/server.js'],
   target: 'node',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build/server'),
     filename: 'bundle.js',
     publicPath: '/',
   },

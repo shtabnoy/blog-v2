@@ -6,17 +6,20 @@
   "scripts": {
     "test": "jest",
     "start": "webpack-dev-server --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
-    "build:ssr": "webpack --config webpack.ssr.js"
+    "build:all": "rm -rf build && webpack --progress --config webpack.server.js && webpack --progress --config webpack.prod.js",
+    "build:client": "rm -rf build/client && webpack --progress --config webpack.prod.js",
+    "build:server": "rm -rf build/server && webpack --progress --config webpack.server.js",
+    "start:server": "node build/server/bundle.js"
   },
   "author": "shtabnoy",
   "license": "ISC",
   "dependencies": {
-    "@apollo/client": "^3.0.0-beta.43",
     "@apollo/react-common": "^3.1.4",
+    "@apollo/react-hooks": "^3.1.5",
     "@apollo/react-ssr": "^3.1.5",
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
+    "apollo-boost": "^0.4.9",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
     "apollo-link-http": "^1.5.17",

@@ -1,7 +1,8 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core'
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 import CanvasView from '../components/CanvasView'
 import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
