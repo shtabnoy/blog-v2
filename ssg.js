@@ -29,7 +29,7 @@ function Html({ content, state }) {
             )};`,
           }}
         />
-        <script src="/static/bundle.js" charSet="UTF-8" />
+        <script src="/bundle.js" charSet="UTF-8" />
       </body>
     </html>
   )

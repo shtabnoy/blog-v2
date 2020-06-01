@@ -8,8 +8,8 @@
     "start": "webpack-dev-server --open --config webpack.dev.js",
     "build:client": "rm -rf build/client && webpack --progress --config webpack.prod.js",
     "build:server": "rm -rf build/server && webpack --progress --config webpack.ssg.js",
-    "static:generate": "npm run build:client && npm run build:server && node build/server/bundle.js",
-    "start:server": "npm run static:generate && node server.js"
+    "build": "npm run build:client && npm run build:server && node build/server/bundle.js",
+    "start:server": "npm run build && node server.js"
   },
   "author": "shtabnoy",
   "license": "ISC",
