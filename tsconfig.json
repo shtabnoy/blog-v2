@@ -12,5 +12,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["./src/**/*", "typings.d.ts"]
+  "include": ["./src/**/*", "typings.d.ts", "server.js", "ssg.js"]
 }

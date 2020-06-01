@@ -3,7 +3,7 @@ const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   mode: 'production',
-  entry: ['./src/server.js'],
+  entry: ['./ssg.js'],
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'build/server'),
@@ -56,11 +56,11 @@ module.exports = {
           },
         ],
       },
-      {
-        test: /\.(graphql|gql)$/,
-        exclude: /node_modules/,
-        loader: 'graphql-tag/loader',
-      },
+      // {
+      //   test: /\.(graphql|gql)$/,
+      //   exclude: /node_modules/,
+      //   loader: 'graphql-tag/loader',
+      // },
     ],
   },
 }

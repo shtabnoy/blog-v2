@@ -1,19 +1,15 @@
 import React from 'react'
-import path from 'path'
+import fs from 'fs'
 import ReactDOM from 'react-dom/server'
 import { ApolloProvider } from '@apollo/react-common'
-import { getDataFromTree, renderToStringWithData } from '@apollo/react-ssr'
+import { getDataFromTree } from '@apollo/react-ssr'
 import { ApolloClient } from 'apollo-client'
 import { createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { StaticRouter } from 'react-router-dom'
-import Express from 'express'
 import fetch from 'node-fetch'
 
-import Application from './App'
-
-const app = new Express()
-const basePort = 8080
+import Application from './src/App'
 
 function Html({ content, state }) {
   return (
@@ -39,20 +35,15 @@ function Html({ content, state }) {
   )
 }
 
-// copy build/client js over to static folder
-app.use('/static', Express.static(path.join(process.cwd(), 'build/client')))
-
-const fun = () => {}
-
-app.use((req, res) => {
+const init = () => {
   const client = new ApolloClient({
     ssrMode: true,
     link: createHttpLink({
       uri: 'http://localhost:1337/graphql',
       credentials: 'same-origin',
-      headers: {
-        cookie: req.header('Cookie'),
-      },
+      // headers: {
+      //   cookie: req.header('Cookie'),
+      // },
       fetch: fetch,
     }),
     cache: new InMemoryCache(),
@@ -62,7 +53,8 @@ app.use((req, res) => {
 
   const App = (
     <ApolloProvider client={client}>
-      <StaticRouter location={req.url} context={context}>
+      {/* TODO: Have to figure this out how to make several routes */}
+      <StaticRouter location={'/'} context={context}>
         <Application />
       </StaticRouter>
     </ApolloProvider>
@@ -79,14 +71,12 @@ app.use((req, res) => {
   getDataFromTree(App).then(() => {
     const content = ReactDOM.renderToString(App)
     const initialState = client.extract()
-    console.log(initialState)
     const html = <Html content={content} state={initialState} />
-    res.status(200)
-    res.send(`<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`)
-    res.end()
+    fs.writeFileSync(
+      'build/client/index.html',
+      `<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`
+    )
   })
-})
+}
 
-app.listen(basePort, () =>
-  console.log(`app Server is now running on http://localhost:${basePort}`)
-)
+init()
