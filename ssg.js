@@ -80,13 +80,16 @@ const init = () => {
     fetch('http://localhost:1337/upload/files')
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
         const urls = res.map((res) => res.url)
         Promise.all(
           urls.map((url) =>
             fetch('http://localhost:1337' + url)
-              .then((res) => res.text())
               .then((res) => {
+                if (!res.ok) return null
+                return res.text()
+              })
+              .then((res) => {
+                if (!res) return
                 const dirName = 'build/client/images'
                 if (!fs.existsSync(dirName)) {
                   fs.mkdirSync(dirName)
