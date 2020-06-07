@@ -76,6 +76,28 @@ const init = () => {
       'build/client/index.html',
       `<!doctype html>\n${ReactDOM.renderToStaticMarkup(html)}`
     )
+    // Get all images and save them into "build/client/images" folder
+    fetch('http://localhost:1337/upload/files')
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res)
+        const urls = res.map((res) => res.url)
+        Promise.all(
+          urls.map((url) =>
+            fetch('http://localhost:1337' + url)
+              .then((res) => res.text())
+              .then((res) => {
+                const dirName = 'build/client/images'
+                if (!fs.existsSync(dirName)) {
+                  fs.mkdirSync(dirName)
+                }
+                fs.writeFileSync(dirName + '/' + url.split('/')[2], res)
+              })
+              .catch(console.error)
+          )
+        )
+      })
+      .catch(console.error)
   })
 }
 
