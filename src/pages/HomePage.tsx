@@ -4,7 +4,7 @@ import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import CanvasView from '../components/CanvasView'
-import SearchIcon from '../components/icons/SearchIcon'
+// import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
 
 const GET_ARTICLES = gql`
@@ -19,6 +19,8 @@ const GET_ARTICLES = gql`
       cover {
         url
         name
+        hash
+        ext
       }
       category {
         name

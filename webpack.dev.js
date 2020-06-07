@@ -6,5 +6,13 @@ module.exports = merge(common, {
   devtool: 'source-map',
   devServer: {
     historyApiFallback: true,
+    proxy: {
+      '/images': {
+        target: 'http://localhost:1337',
+        pathRewrite: {
+          '^/images': '/uploads',
+        },
+      },
+    },
   },
 })

@@ -14,6 +14,8 @@ interface Article {
   id: string
   cover: {
     url: string
+    hash: string
+    ext: string
   }
   title: string
   category: {
@@ -79,7 +81,7 @@ interface Hexagon {
   id: string
   x: number
   y: number
-  coverUrl?: string
+  cover?: string // hash + ext
   text?: string
 }
 
@@ -97,7 +99,8 @@ const loadImage = (url: string) =>
             onload: () => {},
             onerror: () => {},
           }
-    img.src = `${baseUrl}${url}`
+    // img.src = `${baseUrl}${url}`
+    img.src = '/images/' + url
     img.onload = (event) => resolve(event.target)
     img.onerror = (err) => reject(err)
   })
@@ -117,7 +120,7 @@ const addHex = (
   ) {
     const newHex = {
       id: article.id,
-      coverUrl: article.cover.url,
+      cover: article.cover?.hash + article.cover?.ext,
       x: x,
       y: y,
       text: article.title,
@@ -237,7 +240,7 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
       id: articles[0].id,
       x: CANVAS_WIDTH / 2,
       y: CANVAS_HEIGHT / 2,
-      coverUrl: articles[0].cover.url,
+      cover: articles[0].cover?.hash + articles[0].cover?.ext,
       text: articles[0].title,
     },
   ])
@@ -274,7 +277,7 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   useEffect(() => {
     const getImg = async () => {
       const lastHex = hexagons[hexagons.length - 1]
-      const image = await loadImage(lastHex.coverUrl)
+      const image = await loadImage(lastHex.cover)
       setImages((images) => ({
         ...images,
         [lastHex.id]: image as HTMLImageElement,
