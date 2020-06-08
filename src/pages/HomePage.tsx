@@ -99,6 +99,7 @@ const HomePage: React.FC = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
 
+  // TODO: proper handling of articles; not only with an svg cover
   const articles = data.articles.filter(
     (article: any) => article.cover && article.cover.url.endsWith('.svg')
   )
@@ -111,11 +112,9 @@ const HomePage: React.FC = () => {
           <SearchIcon fill={'white'} />
           <input type="text" placeholder="Search article" />
         </div> */}
+        Home page
       </Header>
-      <CanvasView
-        // TODO: proper handling of articles; not only with an svg cover
-        articles={articles}
-      />
+      <CanvasView articles={articles} />
     </React.Fragment>
   )
 }
