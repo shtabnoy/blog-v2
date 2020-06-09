@@ -5,31 +5,7 @@ import { gql, useQuery } from '@apollo/client'
 import CanvasView from '../components/CanvasView'
 import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
-
-const GET_ARTICLES = gql`
-  query getArticles {
-    articles(start: 0) {
-      id
-      title
-      body
-      user {
-        username
-      }
-      cover {
-        url
-        name
-      }
-      category {
-        name
-        image {
-          url
-        }
-      }
-      created_at
-      updated_at
-    }
-  }
-`
+import { GET_ARTICLES } from '../queries'
 
 const Header = styled.header`
   padding: 32px;
@@ -96,8 +72,8 @@ const HomePage: React.FC = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
 
-  const articles = data.articles.filter((article: any) =>
-    article.cover.url.endsWith('.svg')
+  const articles = data.articles.filter(
+    (article: any) => article.cover && article.cover.url.endsWith('.svg')
   )
 
   return (

@@ -8,7 +8,7 @@ const App = (): JSX.Element => {
   return (
     <Router>
       <Switch>
-        <Route path="/">
+        <Route path="/" exact>
           <HomePage />
         </Route>
         <Route path="/articles/:id">
