@@ -53,10 +53,9 @@ const init = () => {
 
   const App = (
     <ApolloProvider client={client}>
-      {/* TODO: Have to figure this out how to make several routes */}
-      <StaticRouter location={'/'} context={context}>
-        <Application />
-      </StaticRouter>
+      {/* <StaticRouter location={'/'} context={context}> */}
+      <Application />
+      {/* </StaticRouter> */}
     </ApolloProvider>
   )
 
@@ -71,6 +70,7 @@ const init = () => {
   getDataFromTree(App).then(() => {
     const content = ReactDOM.renderToString(App)
     const initialState = client.extract()
+    console.log(initialState)
     const html = <Html content={content} state={initialState} />
     fs.writeFileSync(
       'build/client/index.html',

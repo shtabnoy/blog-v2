@@ -56,7 +56,7 @@ const Article = (): JSX.Element => {
     return <div>Loading...</div>
   }
   if (error) {
-    return <div>{error}</div>
+    return <div>Error happened</div>
   }
   return <div>Article loaded.</div>
 }
