@@ -10,7 +10,7 @@ import App from './App.tsx'
 import './App.scss'
 
 const client = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache().restore(window.__APOLLO_STATE__),
   link: new HttpLink({
     uri: 'http://localhost:1337/graphql',
   }),
