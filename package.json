@@ -1,8 +1,8 @@
 {
-  "name": "pickapp",
+  "name": "blog",
   "version": "0.0.1",
-  "description": "The app that helps you with small daily deliveries",
-  "main": "index.ts",
+  "description": "Code of competence",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
     "start": "webpack-dev-server --open --config webpack.dev.js",
