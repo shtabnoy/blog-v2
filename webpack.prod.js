@@ -1,12 +1,4 @@
-// const merge = require('webpack-merge')
-// const common = require('./webpack.common.js')
-
-// module.exports = merge(common, {
-//   mode: 'production',
-// })
-
 const path = require('path')
-// const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   mode: 'production',
@@ -17,9 +9,8 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/',
   },
-  // externals: nodeExternals(),
-  // to make absolute path imports possible
   resolve: {
+    // to make absolute path imports possible
     modules: [path.resolve(__dirname, './src'), 'node_modules'],
     extensions: ['.ts', '.tsx', '.js', '.json'],
   },

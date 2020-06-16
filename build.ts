@@ -3,6 +3,9 @@ const fs = require('fs')
 const { ApolloClient, HttpLink, InMemoryCache } = require('@apollo/client')
 const { GET_ARTICLES } = require('./src/queries')
 
+// TODO: index.html (in the root folder) and inline html in build.ts should have the same content
+// Think on just having index.html, parsing its content, injecting the proper
+// script tag with hydrated apollo state
 const buildHtml = (state: any) => {
   return `
     <!doctype html>
@@ -39,6 +42,8 @@ client
   .query({
     query: GET_ARTICLES,
   })
+  // TODO: one by one get articles with content
+  // TODO: get all static files (see temp.js)
   .then(() => {
     const dirName = 'build'
     if (!fs.existsSync(dirName)) {
