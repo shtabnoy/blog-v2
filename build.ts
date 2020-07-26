@@ -47,6 +47,7 @@ client
   // TODO: one by one get articles with content
   .then(() => {
     const dirName = 'build'
+    
     if (!fs.existsSync(dirName)) {
       fs.mkdirSync(dirName)
     }
@@ -77,6 +78,9 @@ client
         )
       })
       .catch(console.error)
+
+    // Copy Netlify _redirects file to the build folder
+    fs.copyFileSync('_redirects', `${dirName}/_redirects`)
   })
 
 export = {}
