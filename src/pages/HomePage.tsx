@@ -1,9 +1,9 @@
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core'
+import { jsx } from '@emotion/core'
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import CanvasView from '../components/CanvasView'
-import SearchIcon from '../components/icons/SearchIcon'
+// import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
 import { GET_ARTICLES } from '../queries'
 

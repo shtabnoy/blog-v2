@@ -3,12 +3,12 @@ import { jsx } from '@emotion/core'
 import React, { useEffect, useState } from 'react'
 import { Stage, Layer, Text, RegularPolygon, Image, Group } from 'react-konva'
 
-const baseUrl = '' // TODO: make it dependable on .env
+const imagesUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:1337' : ''
 
-interface Point {
-  x: number
-  y: number
-}
+// interface Point {
+//   x: number
+//   y: number
+// }
 
 interface Article {
   id: string
@@ -90,7 +90,7 @@ interface Images {
 const loadImage = (url: string) =>
   new Promise((resolve, reject) => {
     const img = new window.Image()
-    img.src = `${baseUrl}${url}`
+    img.src = `${imagesUrl}${url}`
     img.onload = (event) => resolve(event.target)
     img.onerror = (err) => reject(err)
   })

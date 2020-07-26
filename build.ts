@@ -3,6 +3,8 @@ const fs = require('fs')
 const { ApolloClient, HttpLink, InMemoryCache } = require('@apollo/client')
 const { GET_ARTICLES } = require('./src/queries')
 
+const baseUrl = 'http://localhost:1337'
+
 // TODO: index.html (in the root folder) and inline html in build.ts should have the same content
 // Think on just having index.html, parsing its content, injecting the proper
 // script tag with hydrated apollo state
@@ -33,7 +35,7 @@ const buildHtml = (state: any) => {
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: 'http://localhost:1337/graphql',
+    uri: `${baseUrl}/graphql`,
     fetch: fetch,
   }),
 })
@@ -43,7 +45,6 @@ client
     query: GET_ARTICLES,
   })
   // TODO: one by one get articles with content
-  // TODO: get all static files (see temp.js)
   .then(() => {
     const dirName = 'build'
     if (!fs.existsSync(dirName)) {
@@ -52,13 +53,13 @@ client
     fs.writeFileSync(dirName + '/index.html', buildHtml(client.extract()))
 
     // Get all images and save them into "build/uploads" folder
-    fetch('http://localhost:1337/upload/files')
+    fetch(`${baseUrl}/upload/files`)
       .then((res: any) => res.json())
       .then((res: any) => {
         const urls = res.map((res: any) => res.url)
         Promise.all(
           urls.map((url: string) =>
-            fetch('http://localhost:1337' + url)
+            fetch(`${baseUrl}` + url)
               .then((res: any) => {
                 if (!res.ok) return null
                 return res.text()
