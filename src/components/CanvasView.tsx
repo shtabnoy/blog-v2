@@ -3,7 +3,7 @@ import { jsx } from '@emotion/core'
 import React, { useEffect, useState } from 'react'
 import { Stage, Layer, Text, RegularPolygon, Image, Group } from 'react-konva'
 
-const baseUrl = 'http://localhost:1337' // TODO: make it dependable on .env
+const baseUrl = '' // TODO: make it dependable on .env
 
 interface Point {
   x: number

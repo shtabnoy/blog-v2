@@ -13,7 +13,7 @@ const buildHtml = (state: any) => {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Code of competence</title>
+        <title>Shtabnoy blog</title>
       </head>
       <body>
         <div id="root"></div>
@@ -50,6 +50,32 @@ client
       fs.mkdirSync(dirName)
     }
     fs.writeFileSync(dirName + '/index.html', buildHtml(client.extract()))
+
+    // Get all images and save them into "build/uploads" folder
+    fetch('http://localhost:1337/upload/files')
+      .then((res: any) => res.json())
+      .then((res: any) => {
+        const urls = res.map((res: any) => res.url)
+        Promise.all(
+          urls.map((url: string) =>
+            fetch('http://localhost:1337' + url)
+              .then((res: any) => {
+                if (!res.ok) return null
+                return res.text()
+              })
+              .then((res: any) => {
+                if (!res) return
+                const dirName = 'build/uploads'
+                if (!fs.existsSync(dirName)) {
+                  fs.mkdirSync(dirName)
+                }
+                fs.writeFileSync(dirName + '/' + url.split('/')[2], res)
+              })
+              .catch(console.error)
+          )
+        )
+      })
+      .catch(console.error)
   })
 
 export = {}
