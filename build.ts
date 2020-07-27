@@ -25,7 +25,7 @@ const buildHtml = (state: any) => {
             '\\u003c'
           )};
         </script>
-        <script src="bundle.js" charSet="UTF-8"></script>
+        <script src="/bundle.js" charSet="UTF-8"></script>
       </body>
     </html>
   `
