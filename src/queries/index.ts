@@ -24,3 +24,12 @@ export const GET_ARTICLES = gql`
     }
   }
 `
+
+export const GET_ARTICLE = gql`
+  query getArticle($id: ID!) {
+    article(id: $id) {
+      title
+      body
+    }
+  }
+`
