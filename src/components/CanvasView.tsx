@@ -2,8 +2,10 @@
 import { jsx } from '@emotion/core'
 import React, { useEffect, useState } from 'react'
 import { Stage, Layer, Text, RegularPolygon, Image, Group } from 'react-konva'
+import { useHistory } from 'react-router-dom'
 
-const imagesUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:1337' : ''
+const imagesUrl =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:1337' : ''
 
 // interface Point {
 //   x: number
@@ -223,7 +225,45 @@ const onDragMove = (
   }
 }
 
+const scaleUp = (event: any) => {
+  // TODO: don't trigger on all children elements
+  // currentTarget is the group
+  // target is a child
+  event.currentTarget.to({
+    scaleX: 1.1,
+    scaleY: 1.1,
+    duration: 0.1,
+  })
+  const hex = event.currentTarget.children[0]
+  hex.setShadowColor('black')
+  hex.setShadowBlur(10)
+  hex.setShadowOffset({ x: 10, y: 10 })
+  hex.setShadowOpacity(0.5)
+
+  // cursor: pointer
+  const container = event.target.getStage().container()
+  container.style.cursor = 'pointer'
+}
+
+const scaleDown = (event: any) => {
+  event.currentTarget.to({
+    scaleX: 1,
+    scaleY: 1,
+    duration: 0.1,
+  })
+  const hex = event.currentTarget.children[0]
+  hex.setShadowColor('black')
+  hex.setShadowBlur(0)
+  hex.setShadowOffset({ x: 0, y: 0 })
+  hex.setShadowOpacity(0)
+
+  // cursor: default
+  const container = event.target.getStage().container()
+  container.style.cursor = 'default'
+}
+
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
+  const history = useHistory()
   const [images, setImages] = useState<Images>({})
   const [hexagons, setHexagons] = useState<Hexagon[]>([
     {
@@ -234,35 +274,6 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
       text: articles[0].title,
     },
   ])
-
-  const scaleUp = (event: any) => {
-    // TODO: don't trigger on all children elements
-    // currentTarget is the group
-    // target is a child
-    event.currentTarget.to({
-      scaleX: 1.1,
-      scaleY: 1.1,
-      duration: 0.1,
-    })
-    const hex = event.currentTarget.children[0]
-    hex.setShadowColor('black')
-    hex.setShadowBlur(10)
-    hex.setShadowOffset({ x: 10, y: 10 })
-    hex.setShadowOpacity(0.5)
-  }
-
-  const scaleDown = (event: any) => {
-    event.currentTarget.to({
-      scaleX: 1,
-      scaleY: 1,
-      duration: 0.1,
-    })
-    const hex = event.currentTarget.children[0]
-    hex.setShadowColor('black')
-    hex.setShadowBlur(0)
-    hex.setShadowOffset({ x: 0, y: 0 })
-    hex.setShadowOpacity(0)
-  }
 
   useEffect(() => {
     const getImg = async () => {
@@ -297,6 +308,9 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
               y={hexagon.y}
               onMouseOver={scaleUp}
               onMouseOut={scaleDown}
+              onClick={() => {
+                history.push(`/articles/${hexagon.id}`)
+              }}
             >
               <RegularPolygon
                 radius={hr}
