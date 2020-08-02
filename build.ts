@@ -40,58 +40,56 @@ const client = new ApolloClient({
   }),
 })
 
-fetch(`${baseUrl}/articles`)
-  .then((res: any) => res.json())
-  .then((articles: any) => {
-    Promise.all([
+const build = async () => {
+  // Fetch articles to get their ids for the next requests
+  let resp = await fetch(`${baseUrl}/articles`)
+  const articles = await resp.json()
+
+  // Filling apollo cache with articles
+  await Promise.all([
+    client.query({
+      query: GET_ARTICLES,
+    }),
+    articles.map((article: any) =>
       client.query({
-        query: GET_ARTICLES,
-      }),
-      articles.map((article: any) =>
-        client.query({
-          query: GET_ARTICLE,
-          variables: {
-            id: article.id.toString(),
-          },
-        })
-      ),
-    ]).then(() => {
-      const dirName = 'build'
+        query: GET_ARTICLE,
+        variables: {
+          id: article.id.toString(),
+        },
+      })
+    ),
+  ])
 
-      if (!fs.existsSync(dirName)) {
-        fs.mkdirSync(dirName)
-      }
-      fs.writeFileSync(dirName + '/index.html', buildHtml(client.extract()))
+  // Create build directory and put index.html
+  // with prefetched articles extracted from apollo client into
+  const dirName = 'build'
+  if (!fs.existsSync(dirName)) {
+    fs.mkdirSync(dirName)
+  }
+  fs.writeFileSync(dirName + '/index.html', buildHtml(client.extract()))
 
-      // Get all images and save them into "build/uploads" folder
-      fetch(`${baseUrl}/upload/files`)
-        .then((res: any) => res.json())
-        .then((res: any) => {
-          const urls = res.map((res: any) => res.url)
-          Promise.all(
-            urls.map((url: string) =>
-              fetch(`${baseUrl}` + url)
-                .then((res: any) => {
-                  if (!res.ok) return null
-                  return res.text()
-                })
-                .then((res: any) => {
-                  if (!res) return
-                  const dirName = 'build/uploads'
-                  if (!fs.existsSync(dirName)) {
-                    fs.mkdirSync(dirName)
-                  }
-                  fs.writeFileSync(dirName + '/' + url.split('/')[2], res)
-                })
-                .catch(console.error)
-            )
-          )
-        })
-        .catch(console.error)
+  // Get all images and save them into "build/uploads" folder
+  resp = await fetch(`${baseUrl}/upload/files`)
+  const files = await resp.json()
+  const urls = files.map((res: any) => res.url)
+  for (let url of urls) {
+    resp = await fetch(`${baseUrl}` + url)
+    if (!resp.ok) continue
 
-      // Copy Netlify _redirects file to the build folder
-      fs.copyFileSync('_redirects', `${dirName}/_redirects`)
-    })
-  })
+    const file = await resp.text()
+    if (!file) continue
 
-export = {}
+    const dirName = 'build/uploads'
+    if (!fs.existsSync(dirName)) {
+      fs.mkdirSync(dirName)
+    }
+    fs.writeFileSync(dirName + '/' + url.split('/')[2], file)
+  }
+
+  // Copy Netlify _redirects file to the build folder
+  fs.copyFileSync('_redirects', `${dirName}/_redirects`)
+}
+
+build()
+
+export {}
