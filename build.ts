@@ -1,9 +1,9 @@
-const fetch = require("node-fetch");
-const fs = require("fs");
-const { ApolloClient, HttpLink, InMemoryCache } = require("@apollo/client");
-const { GET_ARTICLES, GET_ARTICLE } = require("./src/queries");
+const fetch = require('node-fetch')
+const fs = require('fs')
+const { ApolloClient, HttpLink, InMemoryCache } = require('@apollo/client')
+const { GET_ARTICLES, GET_ARTICLE } = require('./src/queries')
 
-const baseUrl = "http://localhost:1337";
+const baseUrl = 'http://localhost:1337'
 
 // TODO: index.html (in the root folder) and inline html in build.ts should have the same content
 // Think on just having index.html, parsing its content, injecting the proper
@@ -22,14 +22,14 @@ const buildHtml = (state: any) => {
         <script>
           window.__APOLLO_STATE__=${JSON.stringify(state).replace(
             /</g,
-            "\\u003c"
+            '\\u003c'
           )};
         </script>
         <script src="/bundle.js" charSet="UTF-8"></script>
       </body>
     </html>
-  `;
-};
+  `
+}
 
 // Prefetch all the articles data and put it into apollo cache
 const client = new ApolloClient({
@@ -38,55 +38,60 @@ const client = new ApolloClient({
     uri: `${baseUrl}/graphql`,
     fetch: fetch,
   }),
-});
+})
 
-Promise.all([
-  client.query({
-    query: GET_ARTICLES,
-  }),
-  // TODO: one by one get articles with content
-  client.query({
-    query: GET_ARTICLE,
-    variables: {
-      id: "1",
-    },
-  }),
-]).then(() => {
-  const dirName = "build";
+fetch(`${baseUrl}/articles`)
+  .then((res: any) => res.json())
+  .then((articles: any) => {
+    Promise.all([
+      client.query({
+        query: GET_ARTICLES,
+      }),
+      articles.map((article: any) =>
+        client.query({
+          query: GET_ARTICLE,
+          variables: {
+            id: article.id.toString(),
+          },
+        })
+      ),
+    ]).then(() => {
+      const dirName = 'build'
 
-  if (!fs.existsSync(dirName)) {
-    fs.mkdirSync(dirName);
-  }
-  fs.writeFileSync(dirName + "/index.html", buildHtml(client.extract()));
+      if (!fs.existsSync(dirName)) {
+        fs.mkdirSync(dirName)
+      }
+      fs.writeFileSync(dirName + '/index.html', buildHtml(client.extract()))
 
-  // Get all images and save them into "build/uploads" folder
-  fetch(`${baseUrl}/upload/files`)
-    .then((res: any) => res.json())
-    .then((res: any) => {
-      const urls = res.map((res: any) => res.url);
-      Promise.all(
-        urls.map((url: string) =>
-          fetch(`${baseUrl}` + url)
-            .then((res: any) => {
-              if (!res.ok) return null;
-              return res.text();
-            })
-            .then((res: any) => {
-              if (!res) return;
-              const dirName = "build/uploads";
-              if (!fs.existsSync(dirName)) {
-                fs.mkdirSync(dirName);
-              }
-              fs.writeFileSync(dirName + "/" + url.split("/")[2], res);
-            })
-            .catch(console.error)
-        )
-      );
+      // Get all images and save them into "build/uploads" folder
+      fetch(`${baseUrl}/upload/files`)
+        .then((res: any) => res.json())
+        .then((res: any) => {
+          const urls = res.map((res: any) => res.url)
+          Promise.all(
+            urls.map((url: string) =>
+              fetch(`${baseUrl}` + url)
+                .then((res: any) => {
+                  if (!res.ok) return null
+                  return res.text()
+                })
+                .then((res: any) => {
+                  if (!res) return
+                  const dirName = 'build/uploads'
+                  if (!fs.existsSync(dirName)) {
+                    fs.mkdirSync(dirName)
+                  }
+                  fs.writeFileSync(dirName + '/' + url.split('/')[2], res)
+                })
+                .catch(console.error)
+            )
+          )
+        })
+        .catch(console.error)
+
+      // Copy Netlify _redirects file to the build folder
+      fs.copyFileSync('_redirects', `${dirName}/_redirects`)
     })
-    .catch(console.error);
+  })
 
-  // Copy Netlify _redirects file to the build folder
-  fs.copyFileSync("_redirects", `${dirName}/_redirects`);
-});
-
-export = {};
+export = {}
