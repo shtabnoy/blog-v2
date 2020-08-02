@@ -2,15 +2,13 @@
 import { jsx } from '@emotion/core'
 import React, { useEffect, useState } from 'react'
 import { Stage, Layer, Text, RegularPolygon, Image, Group } from 'react-konva'
+import { Spring, animated } from 'react-spring/renderprops-konva'
+import theme from '../utils/colors'
+import HexArticle from './HexArticle'
 import { useHistory } from 'react-router-dom'
 
 const imagesUrl =
   process.env.NODE_ENV === 'development' ? 'http://localhost:1337' : ''
-
-// interface Point {
-//   x: number
-//   y: number
-// }
 
 interface Article {
   id: string
@@ -42,40 +40,6 @@ const CANVAS_HEIGHT = window.innerHeight
 // opacity step
 // TODO: when hex appears make it ease-in-out aminated
 // const opacityStep = 0.04
-
-// colors
-// palette 1
-// const background = '#af8baf'
-// const primary = '#f6acc8'
-// const secondary = '#584153'
-// const shadowColor = '#26191b'
-
-// palette 2
-// const background = '#649d66'
-// const primary = '#f6f578'
-// const secondary = '#f6d743'
-// const shadowColor = '#06623b'
-
-// palette night theme 1
-// const background = '#27496d'
-// const primary = '#00a8cc'
-// const secondary = '#0c7b93'
-// const shadowColor = '#142850'
-
-// palette 3
-// const background = '#effcef'
-// const primary = '#ccedd2'
-// const secondary = '#94d3ac'
-// const shadowColor = '#588569'
-
-// const grad1 = '#00ccff'
-// const grad2 = '#fdfd1e'
-// const grad1 = '#4fb0cf'
-// const grad2 = '#9341f6'
-const grad1 = '#4456D6'
-const grad2 = '#D931BA'
-const backgroundGrad1 = '#3542A8'
-const backgroundGrad2 = '#841E71'
 
 interface Hexagon {
   id: string
@@ -225,41 +189,8 @@ const onDragMove = (
   }
 }
 
-const scaleUp = (event: any) => {
-  // TODO: don't trigger on all children elements
-  // currentTarget is the group
-  // target is a child
-  event.currentTarget.to({
-    scaleX: 1.1,
-    scaleY: 1.1,
-    duration: 0.1,
-  })
-  const hex = event.currentTarget.children[0]
-  hex.setShadowColor('black')
-  hex.setShadowBlur(10)
-  hex.setShadowOffset({ x: 10, y: 10 })
-  hex.setShadowOpacity(0.5)
-
-  // cursor: pointer
-  const container = event.target.getStage().container()
-  container.style.cursor = 'pointer'
-}
-
-const scaleDown = (event: any) => {
-  event.currentTarget.to({
-    scaleX: 1,
-    scaleY: 1,
-    duration: 0.1,
-  })
-  const hex = event.currentTarget.children[0]
-  hex.setShadowColor('black')
-  hex.setShadowBlur(0)
-  hex.setShadowOffset({ x: 0, y: 0 })
-  hex.setShadowOpacity(0)
-
-  // cursor: default
-  const container = event.target.getStage().container()
-  container.style.cursor = 'default'
+const stageStyle = {
+  background: `linear-gradient(to bottom, ${theme.main.bgPrimary}, ${theme.main.bgSecondary})`,
 }
 
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
@@ -290,63 +221,22 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   return (
     <React.Fragment>
       <Stage
+        draggable
         width={window.innerWidth}
         height={window.innerHeight}
-        style={{
-          background: `linear-gradient(to bottom, ${backgroundGrad1}, ${backgroundGrad2})`,
-        }}
-        draggable
+        style={stageStyle}
         onDragMove={(event) =>
           onDragMove(event, hexagons, setHexagons, articles)
         }
       >
         <Layer>
           {hexagons.map((hexagon) => (
-            <Group
-              key={hexagon.id}
-              x={hexagon.x}
-              y={hexagon.y}
-              onMouseOver={scaleUp}
-              onMouseOut={scaleDown}
-              onClick={() => {
-                history.push(`/articles/${hexagon.id}`)
-              }}
-            >
-              <RegularPolygon
-                radius={hr}
-                sides={6}
-                stroke="rgba(255,255,255,0.9)"
-                fillLinearGradientStartPoint={{
-                  x: 0,
-                  y: -hr,
-                }}
-                fillLinearGradientEndPoint={{
-                  x: 0,
-                  y: hr,
-                }}
-                fillLinearGradientColorStops={[0.3, grad1, 1, grad2]}
-              />
-              {hexagon.text && (
-                <Text
-                  text={hexagon.text}
-                  fontSize={18}
-                  width={2 * hr}
-                  offsetY={90}
-                  offsetX={hr}
-                  align={'center'}
-                  fill={'white'}
-                />
-              )}
-              {images[hexagon.id] && (
-                <Image
-                  offset={{
-                    x: Number(images[hexagon.id].width) / 2,
-                    y: Number(images[hexagon.id].width) / 2,
-                  }}
-                  image={images[hexagon.id]}
-                />
-              )}
-            </Group>
+            <HexArticle
+              hexagon={hexagon}
+              hexRadius={hr}
+              image={images[hexagon.id]}
+              history={history}
+            />
           ))}
         </Layer>
       </Stage>
