@@ -2,7 +2,7 @@
 import { jsx } from '@emotion/core'
 import React from 'react'
 import { Spring, animated } from 'react-spring/renderprops-konva'
-import { HexArticle } from '../types'
+import { Article, Hexagon } from '../types'
 import HexText from './HexText'
 import Hex from './Hex'
 import HexImage from './HexImage'
@@ -47,15 +47,17 @@ const scaleDown = (event: any) => {
 // TODO: make common scale function
 
 interface HexArticleProps {
-  hexagon: HexArticle
-  hexRadius: number
+  hexagon: Hexagon
+  article: Article
+  // hexRadius: number
   image?: HTMLImageElement
   history: any
 }
 
 const HexArticle: React.FC<HexArticleProps> = ({
   hexagon,
-  hexRadius,
+  article,
+  // hexRadius,
   image,
   history,
 }) => {
@@ -73,9 +75,9 @@ const HexArticle: React.FC<HexArticleProps> = ({
             history.push(`/articles/${hexagon.id}`)
           }}
         >
-          <Hex radius={hexRadius} />
-          {hexagon.text && (
-            <HexText text={hexagon.text} hexRadius={hexRadius} />
+          <Hex radius={hexagon.radius} />
+          {article.title && (
+            <HexText text={article.title} hexRadius={hexagon.radius} />
           )}
           {image && <HexImage image={image} />}
         </animated.Group>

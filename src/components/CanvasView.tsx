@@ -5,143 +5,128 @@ import { Stage, Layer } from 'react-konva'
 import theme from '../utils/colors'
 import HexArticle from './HexArticle'
 import { useHistory } from 'react-router-dom'
-import { loadImage } from '../utils/helpers'
-import { Hexagon, Images, Article } from '../types'
-
-// Hex radius
-const hr = 200
-
-// Hex gap
-const hg = 200
+import { loadImage, HEX_RADIUS, HEX_MARGIN } from '../utils/helpers'
+import { Hexagon, Images, Article, Direction } from '../types'
 
 // canvas dimensions
 const CANVAS_WIDTH = window.innerWidth
 const CANVAS_HEIGHT = window.innerHeight
 
 const insert = (
-  article: Article,
-  hexagons: Hexagon[],
+  id: string,
+  // hexagons: Hexagon[],
   x: number,
   y: number,
   coordsCondition: boolean,
   addHex: (hex: Hexagon) => void
 ): boolean => {
-  if (
-    article &&
-    !hexagons.find((h) => h.x === x && h.y === y) &&
-    coordsCondition
-  ) {
-    addHex({
-      id: article.id,
-      coverUrl: article.cover.url,
-      x: x,
-      y: y,
-      text: article.title,
-    })
+  if (coordsCondition) {
+    // if (!hexagons.find((h) => h.x === x && h.y === y) && coordsCondition) {
+    addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
     return true
   }
   return false
+}
+
+const hexOnStage = (hexs: Hexagon[], x: number, y: number): boolean =>
+  hexs.some((h) => h.x === x && h.y === y)
+
+const hexFits = (
+  hex: Hexagon,
+  dir: Direction,
+  stageX: number,
+  stageY: number
+): boolean => {
+  switch (dir) {
+    case Direction.left:
+      return hex.x - hex.radius - hex.margin + stageX > 0
+    case Direction.right:
+      return hex.x + hex.radius + hex.margin + stageX < CANVAS_WIDTH
+    case Direction['top-right']:
+      return (
+        hex.x + hex.radius + hex.margin + stageX < CANVAS_WIDTH &&
+        hex.y - hex.radius - hex.margin + stageY > 0
+      )
+    case Direction['top-left']:
+      return (
+        hex.x - hex.radius - hex.margin + stageX > 0 &&
+        hex.y - hex.radius - hex.margin + stageY > 0
+      )
+    case Direction['bottom-right']:
+      return (
+        hex.x + hex.radius + hex.margin + stageX < CANVAS_WIDTH &&
+        hex.y + hex.radius + hex.margin + stageY < CANVAS_HEIGHT
+      )
+    case Direction['bottom-left']:
+      return (
+        hex.x - hex.radius - hex.margin + stageX > 0 &&
+        hex.y + hex.radius + hex.margin + stageY < CANVAS_HEIGHT
+      )
+    default:
+      return false
+  }
 }
 
 const onDragMove = (
   event: any,
   hexagons: Hexagon[],
   addHex: (hex: Hexagon) => void,
-  articles: Article[]
+  articleId: string
 ) => {
   const stageX = event.target.getStage().attrs.x // leftmost coordinate of the stage
   const stageY = event.target.getStage().attrs.y // topmost coordinate of the stage
 
-  if (hexagons.length >= articles.length) return
+  let x
+  let y
+  let cond
   for (let hexagon of hexagons) {
-    let article = articles[hexagons.length]
-
     // add on the left
-    if (
-      insert(
-        article,
-        hexagons,
-        hexagon.x - 2 * hr,
-        hexagon.y,
-        hexagon.x - hr - hg + stageX > 0,
-        addHex
-      )
-    ) {
-      break
-    }
+    x = hexagon.x - 2 * hexagon.radius
+    y = hexagon.y
+    cond =
+      !hexOnStage(hexagons, x, y) &&
+      hexFits(hexagon, Direction.left, stageX, stageY)
+    if (insert(articleId, x, y, cond, addHex)) break
 
     // add on the right
-    if (
-      insert(
-        article,
-        hexagons,
-        hexagon.x + 2 * hr,
-        hexagon.y,
-        hexagon.x + hr + hg + stageX < CANVAS_WIDTH,
-        addHex
-      )
-    ) {
-      break
-    }
+    x = hexagon.x + 2 * hexagon.radius
+    y = hexagon.y
+    cond =
+      !hexOnStage(hexagons, x, y) &&
+      hexFits(hexagon, Direction.right, stageX, stageY)
+    if (insert(articleId, x, y, cond, addHex)) break
 
     // add on the top right
-    if (
-      insert(
-        article,
-        hexagons,
-        hexagon.x + hr,
-        hexagon.y - 1.75 * hr,
-        hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
-          hexagon.y - hr - hg + stageY > 0,
-        addHex
-      )
-    ) {
-      break
-    }
+    x = hexagon.x + hexagon.radius
+    y = hexagon.y - 1.75 * hexagon.radius
+    cond =
+      !hexOnStage(hexagons, x, y) &&
+      hexFits(hexagon, Direction['top-right'], stageX, stageY)
+    if (insert(articleId, x, y, cond, addHex)) break
 
     // add on the bottom right
-    if (
-      insert(
-        article,
-        hexagons,
-        hexagon.x + hr,
-        hexagon.y + 1.75 * hr,
-        hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
-          hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
-        addHex
-      )
-    ) {
-      break
-    }
+    x = hexagon.x + hexagon.radius
+    y = hexagon.y + 1.75 * hexagon.radius
+    cond =
+      !hexOnStage(hexagons, x, y) &&
+      hexFits(hexagon, Direction['bottom-right'], stageX, stageY)
+    if (insert(articleId, x, y, cond, addHex)) break
 
     // add on the top left
-    if (
-      insert(
-        article,
-        hexagons,
-        hexagon.x - hr,
-        hexagon.y - 1.75 * hr,
-        hexagon.x - hr - hg + stageX > 0 && hexagon.y - hr - hg + stageY > 0,
-        addHex
-      )
-    ) {
-      break
-    }
+    x = hexagon.x - hexagon.radius
+    y = hexagon.y - 1.75 * hexagon.radius
+    cond =
+      !hexOnStage(hexagons, x, y) &&
+      hexFits(hexagon, Direction['top-left'], stageX, stageY)
+    if (insert(articleId, x, y, cond, addHex)) break
 
     // add on the bottom left
-    if (
-      insert(
-        article,
-        hexagons,
-        hexagon.x - hr,
-        hexagon.y + 1.75 * hr,
-        hexagon.x - hr - hg + stageX > 0 &&
-          hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
-        addHex
-      )
-    ) {
-      break
-    }
+    x = hexagon.x - hexagon.radius
+    y = hexagon.y + 1.75 * hexagon.radius
+    cond =
+      !hexOnStage(hexagons, x, y) &&
+      hexFits(hexagon, Direction['bottom-left'], stageX, stageY)
+    if (insert(articleId, x, y, cond, addHex)) break
   }
 }
 
@@ -154,12 +139,14 @@ interface CanvasViewProps {
 }
 
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
-  const initialHex = {
+  const initialHex: Hexagon = {
     id: articles[0].id,
     x: CANVAS_WIDTH / 2,
     y: CANVAS_HEIGHT / 2,
-    coverUrl: articles[0].cover.url,
-    text: articles[0].title,
+    radius: HEX_RADIUS,
+    margin: HEX_MARGIN,
+    // coverUrl: articles[0].cover.url,
+    // text: articles[0].title,
   }
   const history = useHistory()
   const [images, setImages] = useState<Images>({})
@@ -168,7 +155,10 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   useEffect(() => {
     const getImg = async () => {
       const lastHex = hexagons[hexagons.length - 1]
-      const image = await loadImage(lastHex.coverUrl)
+      const imgUrl = articles.find(
+        (article: Article) => article.id === lastHex.id
+      ).cover.url
+      const image = await loadImage(imgUrl)
       setImages((images) => ({
         ...images,
         [lastHex.id]: image as HTMLImageElement,
@@ -184,20 +174,25 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         width={window.innerWidth}
         height={window.innerHeight}
         style={stageStyle}
-        onDragMove={(event) =>
+        onDragMove={(event) => {
+          if (hexagons.length >= articles.length) return
+
           onDragMove(
             event,
             hexagons,
             (hex: Hexagon) => setHexagons([...hexagons, hex]),
-            articles
+            articles[hexagons.length].id
           )
-        }
+        }}
       >
         <Layer>
           {hexagons.map((hexagon) => (
             <HexArticle
               hexagon={hexagon}
-              hexRadius={hr}
+              article={articles.find(
+                (article: Article) => article.id === hexagon.id
+              )}
+              // hexRadius={hr}
               image={images[hexagon.id]}
               history={history}
             />

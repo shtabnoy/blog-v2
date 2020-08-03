@@ -8,3 +8,6 @@ export const loadImage = (url: string) =>
     img.onload = (event) => resolve(event.target)
     img.onerror = (err) => reject(err)
   })
+
+export const HEX_RADIUS = 200
+export const HEX_MARGIN = 200

@@ -1,17 +1,18 @@
-export interface HexArticle {
-  id: string
-  x: number
-  y: number
-  coverUrl?: string
-  text?: string
-}
-
 export interface Hexagon {
   id: string
   x: number
   y: number
-  coverUrl?: string
-  text?: string
+  radius?: number
+  margin?: number
+}
+
+export enum Direction {
+  'left',
+  'right',
+  'top-right',
+  'bottom-right',
+  'top-left',
+  'bottom-left',
 }
 
 export interface Images {
@@ -29,4 +30,8 @@ export interface Article {
       url: string
     }
   }
+}
+
+export interface Articles {
+  [id: string]: Article
 }
