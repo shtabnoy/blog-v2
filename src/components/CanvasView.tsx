@@ -18,27 +18,26 @@ const hg = 200
 const CANVAS_WIDTH = window.innerWidth
 const CANVAS_HEIGHT = window.innerHeight
 
-const addHex = (
+const insert = (
   article: Article,
   hexagons: Hexagon[],
   x: number,
   y: number,
   coordsCondition: boolean,
-  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>
+  addHex: (hex: Hexagon) => void
 ): boolean => {
   if (
     article &&
     !hexagons.find((h) => h.x === x && h.y === y) &&
     coordsCondition
   ) {
-    const newHex = {
+    addHex({
       id: article.id,
       coverUrl: article.cover.url,
       x: x,
       y: y,
       text: article.title,
-    }
-    setHexagons([...hexagons, newHex])
+    })
     return true
   }
   return false
@@ -47,7 +46,7 @@ const addHex = (
 const onDragMove = (
   event: any,
   hexagons: Hexagon[],
-  setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>,
+  addHex: (hex: Hexagon) => void,
   articles: Article[]
 ) => {
   const stageX = event.target.getStage().attrs.x // leftmost coordinate of the stage
@@ -55,17 +54,17 @@ const onDragMove = (
 
   if (hexagons.length >= articles.length) return
   for (let hexagon of hexagons) {
-    let toInsert = articles[hexagons.length]
+    let article = articles[hexagons.length]
 
     // add on the left
     if (
-      addHex(
-        toInsert,
+      insert(
+        article,
         hexagons,
         hexagon.x - 2 * hr,
         hexagon.y,
         hexagon.x - hr - hg + stageX > 0,
-        setHexagons
+        addHex
       )
     ) {
       break
@@ -73,13 +72,13 @@ const onDragMove = (
 
     // add on the right
     if (
-      addHex(
-        toInsert,
+      insert(
+        article,
         hexagons,
         hexagon.x + 2 * hr,
         hexagon.y,
         hexagon.x + hr + hg + stageX < CANVAS_WIDTH,
-        setHexagons
+        addHex
       )
     ) {
       break
@@ -87,14 +86,14 @@ const onDragMove = (
 
     // add on the top right
     if (
-      addHex(
-        toInsert,
+      insert(
+        article,
         hexagons,
         hexagon.x + hr,
         hexagon.y - 1.75 * hr,
         hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
           hexagon.y - hr - hg + stageY > 0,
-        setHexagons
+        addHex
       )
     ) {
       break
@@ -102,14 +101,14 @@ const onDragMove = (
 
     // add on the bottom right
     if (
-      addHex(
-        toInsert,
+      insert(
+        article,
         hexagons,
         hexagon.x + hr,
         hexagon.y + 1.75 * hr,
         hexagon.x + hr + hg + stageX < CANVAS_WIDTH &&
           hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
-        setHexagons
+        addHex
       )
     ) {
       break
@@ -117,13 +116,13 @@ const onDragMove = (
 
     // add on the top left
     if (
-      addHex(
-        toInsert,
+      insert(
+        article,
         hexagons,
         hexagon.x - hr,
         hexagon.y - 1.75 * hr,
         hexagon.x - hr - hg + stageX > 0 && hexagon.y - hr - hg + stageY > 0,
-        setHexagons
+        addHex
       )
     ) {
       break
@@ -131,14 +130,14 @@ const onDragMove = (
 
     // add on the bottom left
     if (
-      addHex(
-        toInsert,
+      insert(
+        article,
         hexagons,
         hexagon.x - hr,
         hexagon.y + 1.75 * hr,
         hexagon.x - hr - hg + stageX > 0 &&
           hexagon.y + hr + hg + stageY < CANVAS_HEIGHT,
-        setHexagons
+        addHex
       )
     ) {
       break
@@ -186,7 +185,12 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         height={window.innerHeight}
         style={stageStyle}
         onDragMove={(event) =>
-          onDragMove(event, hexagons, setHexagons, articles)
+          onDragMove(
+            event,
+            hexagons,
+            (hex: Hexagon) => setHexagons([...hexagons, hex]),
+            articles
+          )
         }
       >
         <Layer>
