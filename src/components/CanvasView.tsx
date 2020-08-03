@@ -1,31 +1,12 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core'
 import React, { useEffect, useState } from 'react'
-import { Stage, Layer, Text, RegularPolygon, Image, Group } from 'react-konva'
-import { Spring, animated } from 'react-spring/renderprops-konva'
+import { Stage, Layer } from 'react-konva'
 import theme from '../utils/colors'
 import HexArticle from './HexArticle'
 import { useHistory } from 'react-router-dom'
-
-const imagesUrl =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:1337' : ''
-
-interface Article {
-  id: string
-  cover: {
-    url: string
-  }
-  title: string
-  category: {
-    image: {
-      url: string
-    }
-  }
-}
-
-interface CanvasViewProps {
-  articles: Article[]
-}
+import { loadImage } from '../utils/helpers'
+import { Hexagon, Images, Article } from '../types'
 
 // Hex radius
 const hr = 200
@@ -36,30 +17,6 @@ const hg = 200
 // canvas dimensions
 const CANVAS_WIDTH = window.innerWidth
 const CANVAS_HEIGHT = window.innerHeight
-
-// opacity step
-// TODO: when hex appears make it ease-in-out aminated
-// const opacityStep = 0.04
-
-interface Hexagon {
-  id: string
-  x: number
-  y: number
-  coverUrl?: string
-  text?: string
-}
-
-interface Images {
-  [id: string]: HTMLImageElement
-}
-
-const loadImage = (url: string) =>
-  new Promise((resolve, reject) => {
-    const img = new window.Image()
-    img.src = `${imagesUrl}${url}`
-    img.onload = (event) => resolve(event.target)
-    img.onerror = (err) => reject(err)
-  })
 
 const addHex = (
   article: Article,
@@ -93,8 +50,8 @@ const onDragMove = (
   setHexagons: React.Dispatch<React.SetStateAction<Hexagon[]>>,
   articles: Article[]
 ) => {
-  const stageX = event.target.getStage().attrs.x
-  const stageY = event.target.getStage().attrs.y
+  const stageX = event.target.getStage().attrs.x // leftmost coordinate of the stage
+  const stageY = event.target.getStage().attrs.y // topmost coordinate of the stage
 
   if (hexagons.length >= articles.length) return
   for (let hexagon of hexagons) {
@@ -193,18 +150,21 @@ const stageStyle = {
   background: `linear-gradient(to bottom, ${theme.main.bgPrimary}, ${theme.main.bgSecondary})`,
 }
 
+interface CanvasViewProps {
+  articles: Article[]
+}
+
 const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
+  const initialHex = {
+    id: articles[0].id,
+    x: CANVAS_WIDTH / 2,
+    y: CANVAS_HEIGHT / 2,
+    coverUrl: articles[0].cover.url,
+    text: articles[0].title,
+  }
   const history = useHistory()
   const [images, setImages] = useState<Images>({})
-  const [hexagons, setHexagons] = useState<Hexagon[]>([
-    {
-      id: articles[0].id,
-      x: CANVAS_WIDTH / 2,
-      y: CANVAS_HEIGHT / 2,
-      coverUrl: articles[0].cover.url,
-      text: articles[0].title,
-    },
-  ])
+  const [hexagons, setHexagons] = useState<Hexagon[]>([initialHex])
 
   useEffect(() => {
     const getImg = async () => {
