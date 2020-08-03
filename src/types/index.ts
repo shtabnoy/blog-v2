@@ -7,12 +7,12 @@ export interface Hexagon {
 }
 
 export enum Direction {
-  'left',
-  'right',
-  'top-right',
-  'bottom-right',
-  'top-left',
-  'bottom-left',
+  l = 'left',
+  r = 'right',
+  tr = 'top-right',
+  br = 'bottom-right',
+  tl = 'top-left',
+  bl = 'bottom-left',
 }
 
 export interface Images {
