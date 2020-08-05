@@ -12,20 +12,6 @@ import { stageStyle } from '../utils/styles'
 const CANVAS_WIDTH = window.innerWidth
 const CANVAS_HEIGHT = window.innerHeight
 
-const insert = (
-  id: string,
-  x: number,
-  y: number,
-  coordsCondition: boolean,
-  addHex: (hex: Hexagon) => void
-): boolean => {
-  if (coordsCondition) {
-    addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
-    return true
-  }
-  return false
-}
-
 const hexOnStage = (hexs: Hexagon[], x: number, y: number): boolean =>
   hexs.some((h) => h.x === x && h.y === y)
 
@@ -69,50 +55,61 @@ const onDragMove = (
   event: any,
   hexs: Hexagon[],
   addHex: (hex: Hexagon) => void,
-  articleId: string
+  id: string
 ) => {
   const stX = event.target.getStage().attrs.x // leftmost coordinate of the stage
   const stY = event.target.getStage().attrs.y // topmost coordinate of the stage
 
   let x
   let y
-  let cond
   for (let hex of hexs) {
     // add on the left
     x = hex.x - 2 * hex.radius
     y = hex.y
-    cond = !hexOnStage(hexs, x, y) && hexFits(hex, Direction.l, stX, stY)
-    if (insert(articleId, x, y, cond, addHex)) break
+    if (!hexOnStage(hexs, x, y) && hexFits(hex, Direction.l, stX, stY)) {
+      addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
+      break
+    }
 
     // add on the right
     x = hex.x + 2 * hex.radius
     y = hex.y
-    cond = !hexOnStage(hexs, x, y) && hexFits(hex, Direction.r, stX, stY)
-    if (insert(articleId, x, y, cond, addHex)) break
+    if (!hexOnStage(hexs, x, y) && hexFits(hex, Direction.r, stX, stY)) {
+      addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
+      break
+    }
 
     // add on the top right
     x = hex.x + hex.radius
     y = hex.y - 1.75 * hex.radius
-    cond = !hexOnStage(hexs, x, y) && hexFits(hex, Direction.tr, stX, stY)
-    if (insert(articleId, x, y, cond, addHex)) break
+    if (!hexOnStage(hexs, x, y) && hexFits(hex, Direction.tr, stX, stY)) {
+      addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
+      break
+    }
 
     // add on the bottom right
     x = hex.x + hex.radius
     y = hex.y + 1.75 * hex.radius
-    cond = !hexOnStage(hexs, x, y) && hexFits(hex, Direction.br, stX, stY)
-    if (insert(articleId, x, y, cond, addHex)) break
+    if (!hexOnStage(hexs, x, y) && hexFits(hex, Direction.br, stX, stY)) {
+      addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
+      break
+    }
 
     // add on the top left
     x = hex.x - hex.radius
     y = hex.y - 1.75 * hex.radius
-    cond = !hexOnStage(hexs, x, y) && hexFits(hex, Direction.tl, stX, stY)
-    if (insert(articleId, x, y, cond, addHex)) break
+    if (!hexOnStage(hexs, x, y) && hexFits(hex, Direction.tl, stX, stY)) {
+      addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
+      break
+    }
 
     // add on the bottom left
     x = hex.x - hex.radius
     y = hex.y + 1.75 * hex.radius
-    cond = !hexOnStage(hexs, x, y) && hexFits(hex, Direction.bl, stX, stY)
-    if (insert(articleId, x, y, cond, addHex)) break
+    if (!hexOnStage(hexs, x, y) && hexFits(hex, Direction.bl, stX, stY)) {
+      addHex({ id, x, y, radius: HEX_RADIUS, margin: HEX_MARGIN })
+      break
+    }
   }
 }
 
