@@ -123,7 +123,14 @@ const pageStyles = css`
     height: 100%;
     width: 100%;
     background-color: white;
-    clip-path: polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0);
+    clip-path: polygon(
+      291px 0px,
+      388px 165px,
+      291px 330px,
+      97px 330px,
+      0px 165px,
+      97px 0px
+    );
   }
 
   .inner {
@@ -135,7 +142,21 @@ const pageStyles = css`
       ${theme.main.primary},
       ${theme.main.secondary}
     );
-    clip-path: polygon(74% 1%, 99% 50%, 74% 99%, 26% 99%, 1% 50%, 26% 1%);
+    clip-path: polygon(
+      291px 1px,
+      387px 165px,
+      291px 329px,
+      97px 329px,
+      1px 165px,
+      97px 1px
+    );
+  }
+  .title {
+    position: absolute;
+    width: 170px;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
   }
 `
 
@@ -160,15 +181,15 @@ const HomePage: React.FC = () => {
       </Header>
       {/* <CanvasView
         // TODO: proper handling of articles; not only with an svg cover
-        articles={[
-          ...articles,
-        ]}
+        articles={articles}
       /> */}
       <div className="hex-grid__list">
         {articles.map((article: any) => (
           <div className="hex-grid__item">
             <div className="hex-grid__content">
-              <div className="inner">{article.title}</div>
+              <div className="inner">
+                <div className="title">{article.title}</div>
+              </div>
             </div>
           </div>
         ))}
