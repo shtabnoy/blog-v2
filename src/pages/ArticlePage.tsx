@@ -7,6 +7,7 @@ import { GET_ARTICLE } from '../queries'
 import theme from '../utils/colors'
 import ReactMarkdown from 'react-markdown'
 import styled from '@emotion/styled'
+import BackButton from '../components/BackButton'
 
 interface ArticleProps {}
 
@@ -17,7 +18,7 @@ const pageStyles = css`
     ${theme.main.bgSecondary}
   );
   background-attachment: fixed;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
 
   p {
     margin: 36px 0;
@@ -33,8 +34,9 @@ const pageStyles = css`
 
 const Content = styled.main`
   margin: 0 auto;
-  padding: 100px 0;
+  padding: 120px 100px 100px;
   max-width: 680px;
+  min-width: 480px;
 `
 
 const Article: React.FC<ArticleProps> = () => {
@@ -50,8 +52,12 @@ const Article: React.FC<ArticleProps> = () => {
 
   return (
     <div css={pageStyles}>
+      <BackButton />
       <Content>
         <h1>{data.article.title}</h1>
+        <div className="date">
+          {new Date(data.article.created_at).toDateString()}
+        </div>
         <ReactMarkdown source={data.article.body} />
       </Content>
     </div>

@@ -1,11 +1,12 @@
 /** @jsx jsx */
-import { jsx } from '@emotion/core'
+import { jsx, css } from '@emotion/core'
 import React from 'react'
 import { useQuery } from '@apollo/client'
 import CanvasView from '../components/CanvasView'
 // import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
 import { GET_ARTICLES } from '../queries'
+import theme from '../utils/colors'
 
 const Header = styled.header`
   padding: 32px;
@@ -66,6 +67,78 @@ const Header = styled.header`
   }
 `
 
+const pageStyles = css`
+  background: linear-gradient(
+    to bottom,
+    ${theme.main.bgPrimary},
+    ${theme.main.bgSecondary}
+  );
+  background-attachment: fixed;
+  color: rgba(255, 255, 255, 0.9);
+
+  .hex-grid__list {
+    --amount: 3;
+    --counter: 1;
+    display: grid;
+    grid-template-columns: repeat(var(--amount), 1fr 2fr) 1fr;
+    grid-gap: 20px 40px;
+  }
+
+  .hex-grid__item {
+    position: relative;
+    grid-column: 1 / span 3;
+    grid-row: calc(var(--counter) + var(--counter)) / span 2;
+    height: 330px;
+    /* background-color: white; */
+    &:hover {
+      /* transform: scale(1.1); */
+    }
+  }
+
+  .hex-grid__item:nth-of-type(n + 4) {
+    --counter: 2;
+  }
+
+  .hex-grid__item:nth-of-type(n + 7) {
+    --counter: 3;
+  }
+
+  .hex-grid__item:nth-of-type(3n + 1) {
+    grid-column: 1 / span 3;
+  }
+
+  .hex-grid__item:nth-of-type(3n + 2) {
+    grid-column: 3 / span 3;
+    grid-row: calc(var(--counter) + var(--counter) - 1) / span 2;
+  }
+
+  .hex-grid__item:nth-of-type(3n + 3) {
+    grid-column: 5 / span 3;
+  }
+
+  .hex-grid__content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    clip-path: polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0);
+  }
+
+  .inner {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(
+      to bottom,
+      ${theme.main.primary},
+      ${theme.main.secondary}
+    );
+    clip-path: polygon(74% 1%, 99% 50%, 74% 99%, 26% 99%, 1% 50%, 26% 1%);
+  }
+`
+
 const HomePage: React.FC = () => {
   const { loading, error, data } = useQuery(GET_ARTICLES)
 
@@ -77,7 +150,7 @@ const HomePage: React.FC = () => {
   )
 
   return (
-    <React.Fragment>
+    <div css={pageStyles}>
       <Header>
         {/* TODO: Implement search */}
         {/* <div className="search">
@@ -85,11 +158,22 @@ const HomePage: React.FC = () => {
           <input type="text" placeholder="Search article" />
         </div> */}
       </Header>
-      <CanvasView
+      {/* <CanvasView
         // TODO: proper handling of articles; not only with an svg cover
-        articles={articles}
-      />
-    </React.Fragment>
+        articles={[
+          ...articles,
+        ]}
+      /> */}
+      <div className="hex-grid__list">
+        {articles.map((article: any) => (
+          <div className="hex-grid__item">
+            <div className="hex-grid__content">
+              <div className="inner">{article.title}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
