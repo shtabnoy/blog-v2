@@ -7,6 +7,8 @@ import CanvasView from '../components/CanvasView'
 import styled from '@emotion/styled'
 import { GET_ARTICLES } from '../queries'
 import theme from '../utils/colors'
+import HexGridItem from '../components/HexGridItem'
+import { Article } from '../types'
 
 const Header = styled.header`
   padding: 32px;
@@ -75,89 +77,16 @@ const pageStyles = css`
   );
   background-attachment: fixed;
   color: rgba(255, 255, 255, 0.9);
+  padding-top: 120px;
+`
 
-  .hex-grid__list {
-    --amount: 3;
-    --counter: 1;
-    display: grid;
-    grid-template-columns: repeat(var(--amount), 1fr 2fr) 1fr;
-    grid-gap: 20px 40px;
-  }
-
-  .hex-grid__item {
-    position: relative;
-    grid-column: 1 / span 3;
-    grid-row: calc(var(--counter) + var(--counter)) / span 2;
-    height: 330px;
-    /* background-color: white; */
-    &:hover {
-      /* transform: scale(1.1); */
-    }
-  }
-
-  .hex-grid__item:nth-of-type(n + 4) {
-    --counter: 2;
-  }
-
-  .hex-grid__item:nth-of-type(n + 7) {
-    --counter: 3;
-  }
-
-  .hex-grid__item:nth-of-type(3n + 1) {
-    grid-column: 1 / span 3;
-  }
-
-  .hex-grid__item:nth-of-type(3n + 2) {
-    grid-column: 3 / span 3;
-    grid-row: calc(var(--counter) + var(--counter) - 1) / span 2;
-  }
-
-  .hex-grid__item:nth-of-type(3n + 3) {
-    grid-column: 5 / span 3;
-  }
-
-  .hex-grid__content {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    background-color: white;
-    clip-path: polygon(
-      291px 0px,
-      388px 165px,
-      291px 330px,
-      97px 330px,
-      0px 165px,
-      97px 0px
-    );
-  }
-
-  .inner {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(
-      to bottom,
-      ${theme.main.primary},
-      ${theme.main.secondary}
-    );
-    clip-path: polygon(
-      291px 1px,
-      387px 165px,
-      291px 329px,
-      97px 329px,
-      1px 165px,
-      97px 1px
-    );
-  }
-  .title {
-    position: absolute;
-    width: 170px;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
+const hexGridList = css`
+  --col-start: 1;
+  display: grid;
+  justify-content: center;
+  grid-auto-rows: 100px;
+  grid-template-columns: repeat(6, 173px);
+  grid-gap: 10px 20px;
 `
 
 const HomePage: React.FC = () => {
@@ -183,15 +112,9 @@ const HomePage: React.FC = () => {
         // TODO: proper handling of articles; not only with an svg cover
         articles={articles}
       /> */}
-      <div className="hex-grid__list">
-        {articles.map((article: any) => (
-          <div className="hex-grid__item">
-            <div className="hex-grid__content">
-              <div className="inner">
-                <div className="title">{article.title}</div>
-              </div>
-            </div>
-          </div>
+      <div css={hexGridList}>
+        {articles.map((article: Article) => (
+          <HexGridItem article={article} key={article.id} />
         ))}
       </div>
     </div>
