@@ -22,7 +22,6 @@ const scaleUp = (event: any) => {
   hex.setShadowOffset({ x: 10, y: 10 })
   hex.setShadowOpacity(0.5)
 
-  // cursor: pointer
   const container = event.target.getStage().container()
   container.style.cursor = 'pointer'
 }
@@ -39,17 +38,13 @@ const scaleDown = (event: any) => {
   hex.setShadowOffset({ x: 0, y: 0 })
   hex.setShadowOpacity(0)
 
-  // cursor: default
   const container = event.target.getStage().container()
   container.style.cursor = 'default'
 }
 
-// TODO: make common scale function
-
 interface HexArticleProps {
   hexagon: Hexagon
   article: Article
-  // hexRadius: number
   image?: HTMLImageElement
   history: any
 }
@@ -57,7 +52,6 @@ interface HexArticleProps {
 const HexArticle: React.FC<HexArticleProps> = ({
   hexagon,
   article,
-  // hexRadius,
   image,
   history,
 }) => {

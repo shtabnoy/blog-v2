@@ -2,8 +2,8 @@ export interface Hexagon {
   id: string
   x: number
   y: number
-  radius?: number
-  margin?: number
+  radius: number
+  margin: number
 }
 
 export enum Direction {
@@ -26,9 +26,7 @@ export interface Article {
   }
   title: string
   category: {
-    image: {
-      url: string
-    }
+    name: string
   }
 }
 

@@ -4,6 +4,7 @@ import React from 'react'
 import { Article } from '../types'
 import theme from '../utils/colors'
 import { imagesUrl } from '../utils/helpers'
+import CategoryIcon from './CategoryIcon'
 
 const hexGridItemStyles = css`
   position: relative;
@@ -33,16 +34,14 @@ const hexGridItemStyles = css`
 
   svg {
     overflow: visible;
-    g {
+    cursor: pointer;
+    .polygonal-area {
       transition: all 0.7s;
       transform-origin: 50% 50%;
       &:hover {
         transform: scale(1.1);
       }
     }
-    /* -webkit-filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.7)); */
-    /* filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.7)); */
-    /* filter: drop-shadow(3px 3px 2px #360742); */
   }
 `
 
@@ -63,12 +62,17 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
             <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
           </filter>
         </defs>
-        <g>
+        <g className="polygonal-area">
           <polygon
             points="173,0 346,100 346,300 173,400 0,300 0,100"
             fill="url(#polygon-bg)"
           />
-          <text textAnchor="middle" fill="white" x="50%" y="30%">
+          <text
+            textAnchor="middle"
+            fill="rgba(255, 255, 255, 0.9)"
+            x="50%"
+            y="30%"
+          >
             {article.title}
             {/* {splitSentence(article.title).map((line, index) => (
               <tspan x="50%" y={`${25 + index * 8}%`}>
@@ -82,14 +86,7 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
             y="50%"
             transform="translate(-50, -50)"
           />
-          <path
-            d="M 173 0 L 346 100 L 346 300 L 173 400 L 0 300 L 0 100 Z"
-            strokeWidth="3"
-            stroke="#360742"
-            strokeLinecap="round"
-            fill="none"
-            // filter="url(#blurMe)"
-          />
+          <CategoryIcon name={article.category.name} />
         </g>
       </svg>
     </div>
