@@ -132,14 +132,16 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
   useEffect(() => {
     const getImg = async () => {
       const lastHex = hexagons[hexagons.length - 1]
-      const imgUrl = articles.find(
+      const article = articles.find(
         (article: Article) => article.id === lastHex.id
-      ).cover.url
-      const image = await loadImage(imgUrl)
-      setImages((images) => ({
-        ...images,
-        [lastHex.id]: image as HTMLImageElement,
-      }))
+      )
+      if (article && article.cover.url) {
+        const image = await loadImage(article.cover.url)
+        setImages((images) => ({
+          ...images,
+          [lastHex.id]: image as HTMLImageElement,
+        }))
+      }
     }
     getImg()
   }, [hexagons])
@@ -162,15 +164,20 @@ const CanvasView: React.FC<CanvasViewProps> = ({ articles }) => {
         }}
       >
         <Layer>
-          {hexagons.map((hexagon) => (
-            <HexArticle
-              key={hexagon.id}
-              hexagon={hexagon}
-              article={articles.find((a) => a.id === hexagon.id)}
-              image={images[hexagon.id]}
-              history={history}
-            />
-          ))}
+          {hexagons.map((hexagon) => {
+            const article = articles.find((a) => a.id === hexagon.id)
+            if (article) {
+              return (
+                <HexArticle
+                  key={hexagon.id}
+                  hexagon={hexagon}
+                  article={article}
+                  image={images[hexagon.id]}
+                  history={history}
+                />
+              )
+            }
+          })}
         </Layer>
       </Stage>
     </React.Fragment>
