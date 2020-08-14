@@ -1,5 +1,4 @@
-/** @jsx jsx */
-import { jsx, css } from '@emotion/core'
+import { css } from '@emotion/core'
 import React from 'react'
 import { useQuery } from '@apollo/client'
 import CanvasView from '../components/CanvasView'
@@ -69,7 +68,7 @@ const Header = styled.header`
   }
 `
 
-const pageStyles = css`
+const Page = styled.div`
   background: linear-gradient(
     to bottom,
     ${theme.main.bgPrimary},
@@ -80,7 +79,7 @@ const pageStyles = css`
   padding-top: 120px;
 `
 
-const hexGridList = css`
+const HexGridList = styled.div`
   --col-start: 1;
   display: grid;
   justify-content: center;
@@ -100,7 +99,7 @@ const HomePage: React.FC = () => {
   )
 
   return (
-    <div css={pageStyles}>
+    <Page>
       <Header>
         {/* TODO: Implement search */}
         {/* <div className="search">
@@ -112,12 +111,12 @@ const HomePage: React.FC = () => {
         // TODO: proper handling of articles; not only with an svg cover
         articles={articles}
       /> */}
-      <div css={hexGridList}>
+      <HexGridList>
         {articles.map((article: Article) => (
           <HexGridItem article={article} key={article.id} />
         ))}
-      </div>
-    </div>
+      </HexGridList>
+    </Page>
   )
 }
 

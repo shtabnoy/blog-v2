@@ -1,12 +1,11 @@
-/** @jsx jsx */
-import { jsx, css } from '@emotion/core'
 import React from 'react'
 import { Article } from '../types'
 import theme from '../utils/colors'
 import { imagesUrl } from '../utils/helpers'
 import CategoryIcon from './CategoryIcon'
+import styled from '@emotion/styled'
 
-const hexGridItemStyles = css`
+const HexGridItemDiv = styled.div`
   position: relative;
   grid-row: span 3;
   grid-column: calc(var(--col-start)) / span 2;
@@ -51,7 +50,7 @@ interface HexGridItemProps {
 
 const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
   return (
-    <div css={hexGridItemStyles}>
+    <HexGridItemDiv>
       <svg viewBox="0 0 346 400" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="polygon-bg" x1="0" x2="0" y1="0" y2="1">
@@ -89,7 +88,7 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
           <CategoryIcon name={article.category.name} />
         </g>
       </svg>
-    </div>
+    </HexGridItemDiv>
   )
 }
 

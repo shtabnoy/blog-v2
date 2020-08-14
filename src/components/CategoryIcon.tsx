@@ -1,8 +1,8 @@
-import { css } from '@emotion/core'
 import React from 'react'
 import theme from '../utils/colors'
+import styled from '@emotion/styled'
 
-const categoryIconStyles = css`
+const CategoryIconGroup = styled.g`
   transform: translate(calc(50% - 22px), 80%);
   fill: ${theme.main.bgPrimary};
   stroke-width: 2;
@@ -28,7 +28,7 @@ interface CategoryIconProps {
 
 const CategoryIcon: React.FC<CategoryIconProps> = ({ name }) => {
   return (
-    <g css={categoryIconStyles}>
+    <CategoryIconGroup>
       <polygon points="43.3,38 22.1,50.2 1,38 1,13.5 22.1,1.2 43.3,13.5" />
       {name === 'Cryptography' && (
         <>
@@ -60,7 +60,7 @@ const CategoryIcon: React.FC<CategoryIconProps> = ({ name }) => {
           <path d="M34.7,22.5L33,20.8l-3,3l1.7,1.7c0.4,0.4,1,0.4,1.3,0l1.7-1.7C35.1,23.5,35.1,22.9,34.7,22.5z" />
         </>
       )}
-    </g>
+    </CategoryIconGroup>
   )
 }
 

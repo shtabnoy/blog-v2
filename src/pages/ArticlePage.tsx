@@ -1,5 +1,3 @@
-/** @jsx jsx */
-import { jsx, css } from '@emotion/core'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
@@ -11,7 +9,7 @@ import BackButton from '../components/BackButton'
 
 interface ArticleProps {}
 
-const pageStyles = css`
+const Page = styled.div`
   background: linear-gradient(
     to bottom,
     ${theme.main.bgPrimary},
@@ -51,7 +49,7 @@ const Article: React.FC<ArticleProps> = () => {
   if (error) return <p>Error :(</p>
 
   return (
-    <div css={pageStyles}>
+    <Page>
       <BackButton />
       <Content>
         <h1>{data.article.title}</h1>
@@ -60,7 +58,7 @@ const Article: React.FC<ArticleProps> = () => {
         </div>
         <ReactMarkdown source={data.article.body} />
       </Content>
-    </div>
+    </Page>
   )
 }
 

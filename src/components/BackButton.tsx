@@ -1,9 +1,8 @@
-/** @jsx jsx */
-import { jsx, css } from '@emotion/core'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
+import styled from '@emotion/styled'
 
-const backButtonStyles = css`
+const BackButtonSvg = styled.svg`
   width: 60px;
   height: 60px;
   padding-left: 40px;
@@ -35,11 +34,10 @@ const BackButton: React.FC<{}> = () => {
   const history = useHistory()
 
   return (
-    <svg
+    <BackButtonSvg
       onClick={() => history.goBack()}
       id="back-button"
       viewBox="-30 0 536 506"
-      css={backButtonStyles}
     >
       <path
         className="arrow"
@@ -55,7 +53,7 @@ const BackButton: React.FC<{}> = () => {
       />
       <rect fill="white" x="410" y="205" width="32" height="32" />
       <rect fill="white" x="474" y="205" width="32" height="32" />
-    </svg>
+    </BackButtonSvg>
   )
 }
 
