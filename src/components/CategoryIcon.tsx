@@ -10,17 +10,17 @@ const CategoryIconGroup = styled.g`
   line {
     stroke-linecap: round;
     stroke: rgba(255, 255, 255, 0.7);
-    transition: all 0.7s;
+    transition: all 0.5s;
   }
   path {
     fill: rgba(255, 255, 255, 0.7);
-    transition: all 0.7s;
+    transition: all 0.5s;
   }
   polygon {
     stroke: rgba(255, 255, 255, 0.7);
     /* stroke-dasharray: 300;
     stroke-dashoffset: 150; */
-    transition: all 0.7s;
+    transition: all 0.5s;
   }
   &:hover polygon {
     fill: rgba(255, 255, 255, 0.7);

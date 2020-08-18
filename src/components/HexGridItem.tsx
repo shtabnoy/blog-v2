@@ -4,6 +4,7 @@ import theme from '../utils/colors'
 import { imagesUrl } from '../utils/helpers'
 import CategoryIcon from './CategoryIcon'
 import styled from '@emotion/styled'
+import { useHistory } from 'react-router-dom'
 
 const HexGridItemDiv = styled.div`
   position: relative;
@@ -49,8 +50,14 @@ interface HexGridItemProps {
 }
 
 const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
+  const history = useHistory()
+
   return (
-    <HexGridItemDiv>
+    <HexGridItemDiv
+      onClick={() => {
+        history.push(`/articles/${article.id}`)
+      }}
+    >
       <svg viewBox="0 0 346 400" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="polygon-bg" x1="0" x2="0" y1="0" y2="1">

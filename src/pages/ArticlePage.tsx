@@ -10,6 +10,7 @@ import BackButton from '../components/BackButton'
 interface ArticleProps {}
 
 const Page = styled.div`
+  min-height: 100%;
   background: linear-gradient(
     to bottom,
     ${theme.main.bgPrimary},
@@ -45,18 +46,23 @@ const Article: React.FC<ArticleProps> = () => {
     },
   })
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error :(</p>
-
   return (
     <Page>
       <BackButton />
       <Content>
-        <h1>{data.article.title}</h1>
-        <div className="date">
-          {new Date(data.article.created_at).toDateString()}
-        </div>
-        <ReactMarkdown source={data.article.body} />
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error :(</p>
+        ) : (
+          <>
+            <h1>{data.article.title}</h1>
+            <div className="date">
+              {new Date(data.article.created_at).toDateString()}
+            </div>
+            <ReactMarkdown source={data.article.body} />
+          </>
+        )}
       </Content>
     </Page>
   )
