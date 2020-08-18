@@ -78,7 +78,7 @@ const buildStatic = async () => {
 
   // Get the list of all uploaded files
   // TODO: filter those that related to an article
-  let files
+  let files = []
   try {
     resp = await fetch(`${baseUrl}/upload/files`)
     files = await resp.json()
@@ -86,7 +86,6 @@ const buildStatic = async () => {
     console.error(`Failed to fetch file list: ${error}`)
     return
   }
-
   // Get all images and save them into "build/uploads" folder
   try {
     const urls = files.map((res: any) => res.url)

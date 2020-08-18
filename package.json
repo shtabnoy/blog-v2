@@ -11,7 +11,7 @@
     "build": "rm -rf build && npm run build:js && npm run build:html",
     "start:server": "npm run build && node server.js"
   },
-  "author": "akido",
+  "author": "shtabnoy",
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.1.3",

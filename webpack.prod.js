@@ -3,7 +3,7 @@ const path = require('path')
 module.exports = {
   mode: 'production',
   entry: ['./src/index.js'],
-  target: 'node',
+  target: 'web',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
@@ -24,11 +24,6 @@ module.exports = {
         loader: 'babel-loader',
         test: /\.js$/,
         exclude: /node_modules/,
-      },
-      {
-        enforce: 'pre',
-        test: /\.js$/,
-        loader: 'source-map-loader',
       },
       {
         test: /\.scss$/,
