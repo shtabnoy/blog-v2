@@ -1,7 +1,6 @@
-import { css } from '@emotion/core'
 import React from 'react'
 import { useQuery } from '@apollo/client'
-import CanvasView from '../components/CanvasView'
+// import CanvasView from '../components/CanvasView'
 // import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
 import { GET_ARTICLES } from '../queries'
