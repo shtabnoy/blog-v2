@@ -8,26 +8,73 @@ import { useHistory } from 'react-router-dom'
 
 const HexGridItemDiv = styled.div`
   position: relative;
-  grid-row: span 3;
+  grid-row: span 4;
+  @media (min-width: 600px) {
+    grid-row: span 3;
+  }
+
   grid-column: calc(var(--col-start)) / span 2;
   width: 346px;
   height: 400px;
 
-  &:nth-of-type(5n + 1) {
+  &:nth-of-type(n + 1) {
     --col-start: 1;
   }
-  &:nth-of-type(5n + 2) {
-    --col-start: 3;
+
+  @media (min-width: 600px) {
+    &:nth-of-type(2n + 1) {
+      --col-start: 1;
+    }
+    &:nth-of-type(2n + 2) {
+      --col-start: 2;
+    }
   }
-  &:nth-of-type(5n + 3) {
-    --col-start: 5;
+
+  @media (min-width: 800px) {
+    &:nth-of-type(3n + 1) {
+      --col-start: 1;
+    }
+    &:nth-of-type(3n + 2) {
+      --col-start: 3;
+    }
+    &:nth-of-type(3n + 3) {
+      --col-start: 2;
+    }
   }
-  &:nth-of-type(5n + 4) {
-    --col-start: 2;
+
+  @media (min-width: 1000px) {
+    &:nth-of-type(4n + 1) {
+      --col-start: 1;
+    }
+    &:nth-of-type(4n + 2) {
+      --col-start: 3;
+    }
+    &:nth-of-type(4n + 3) {
+      --col-start: 2;
+    }
+    &:nth-of-type(4n + 4) {
+      --col-start: 4;
+    }
   }
-  &:nth-of-type(5n + 5) {
-    --col-start: 4;
+
+  @media (min-width: 1200px) {
+    &:nth-of-type(5n + 1) {
+      --col-start: 1;
+    }
+    &:nth-of-type(5n + 2) {
+      --col-start: 3;
+    }
+    &:nth-of-type(5n + 3) {
+      --col-start: 5;
+    }
+    &:nth-of-type(5n + 4) {
+      --col-start: 2;
+    }
+    &:nth-of-type(5n + 5) {
+      --col-start: 4;
+    }
   }
+
   &:last-of-type {
     grid-row: span 4;
   }

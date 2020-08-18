@@ -9,14 +9,20 @@ import HexGridItem from '../components/HexGridItem'
 import { Article } from '../types'
 
 const Header = styled.header`
+  top: 0;
+  height: 120px;
   padding: 32px;
   position: absolute;
   width: 100%;
-  display: flex;
-  align-items: center;
+  /* display: flex; */
+  /* align-items: center; */
   box-sizing: border-box;
+  h1 {
+    margin: 0;
+    text-align: center;
+  }
 
-  .search {
+  /* .search {
     width: 350px;
     display: flex;
     align-items: center;
@@ -64,7 +70,7 @@ const Header = styled.header`
         width: 100%;
       }
     }
-  }
+  } */
 `
 
 const Page = styled.div`
@@ -75,16 +81,27 @@ const Page = styled.div`
   );
   background-attachment: fixed;
   color: rgba(255, 255, 255, 0.9);
-  padding-top: 120px;
 `
 
 const HexGridList = styled.div`
-  --col-start: 1;
   display: grid;
   justify-content: center;
   grid-auto-rows: 100px;
-  grid-template-columns: repeat(6, 173px);
+  grid-template-columns: repeat(2, 173px);
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(3, 173px);
+  }
+  @media (min-width: 800px) {
+    grid-template-columns: repeat(3, 173px);
+  }
+  @media (min-width: 1000px) {
+    grid-template-columns: repeat(5, 173px);
+  }
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(6, 173px);
+  }
   grid-gap: 10px 20px;
+  padding-top: 120px;
 `
 
 const HomePage: React.FC = () => {
@@ -94,7 +111,7 @@ const HomePage: React.FC = () => {
   if (error) return <p>Error :(</p>
 
   const articles = data.articles.filter(
-    (article: any) => article.cover && article.cover.url.endsWith('.svg')
+    (article: Article) => article.cover && article.cover.url.endsWith('.svg')
   )
 
   return (
@@ -105,6 +122,7 @@ const HomePage: React.FC = () => {
           <SearchIcon fill={'white'} />
           <input type="text" placeholder="Search article" />
         </div> */}
+        <h1>t3ch b10g</h1>
       </Header>
       {/* <CanvasView
         // TODO: proper handling of articles; not only with an svg cover
