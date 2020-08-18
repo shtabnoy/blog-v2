@@ -14,7 +14,8 @@ const HexGridItemDiv = styled.div`
   }
 
   grid-column: calc(var(--col-start)) / span 2;
-  width: 346px;
+  /* width: 346px; */
+  width: 100%;
   height: 400px;
 
   &:nth-of-type(n + 1) {

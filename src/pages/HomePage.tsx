@@ -87,20 +87,20 @@ const HexGridList = styled.div`
   display: grid;
   justify-content: center;
   grid-auto-rows: 100px;
-  grid-template-columns: repeat(2, 173px);
+  grid-template-columns: repeat(2, 160px);
   @media (min-width: 600px) {
-    grid-template-columns: repeat(3, 173px);
+    grid-template-columns: repeat(3, 160px);
   }
   @media (min-width: 800px) {
-    grid-template-columns: repeat(3, 173px);
+    grid-template-columns: repeat(4, 160px);
   }
   @media (min-width: 1000px) {
-    grid-template-columns: repeat(5, 173px);
+    grid-template-columns: repeat(5, 160px);
   }
   @media (min-width: 1200px) {
-    grid-template-columns: repeat(6, 173px);
+    grid-template-columns: repeat(6, 160px);
   }
-  grid-gap: 10px 20px;
+  grid-gap: 10px 26px;
   padding-top: 120px;
 `
 
