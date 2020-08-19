@@ -23,7 +23,10 @@ const Page = styled.div`
     margin: 36px 0;
   }
   h1 {
-    margin: 0 0 72px;
+    margin: 0 0 48px;
+    @media (min-width: 600px) {
+      margin: 0 0 72px;
+    }
   }
   h2,
   h3 {
@@ -33,9 +36,11 @@ const Page = styled.div`
 
 const Content = styled.main`
   margin: 0 auto;
-  padding: 120px 100px 100px;
   max-width: 680px;
-  min-width: 480px;
+  padding: 120px 40px 100px;
+  @media (min-width: 600px) {
+    padding: 120px 100px 100px;
+  }
 `
 
 const Article: React.FC<ArticleProps> = () => {

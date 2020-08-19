@@ -110,10 +110,6 @@ const HomePage: React.FC = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
 
-  const articles = data.articles.filter(
-    (article: Article) => article.cover && article.cover.url.endsWith('.svg')
-  )
-
   return (
     <Page>
       <Header>
@@ -129,7 +125,7 @@ const HomePage: React.FC = () => {
         articles={articles}
       /> */}
       <HexGridList>
-        {articles.map((article: Article) => (
+        {data.articles.map((article: Article) => (
           <HexGridItem article={article} key={article.id} />
         ))}
       </HexGridList>

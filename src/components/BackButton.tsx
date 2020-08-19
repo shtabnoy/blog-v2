@@ -7,7 +7,7 @@ const BackButtonSvg = styled.svg`
   height: 60px;
   padding-left: 40px;
   padding-top: 40px;
-  position: fixed;
+  position: absolute;
   cursor: pointer;
 
   .arrow {
@@ -30,7 +30,7 @@ const BackButtonSvg = styled.svg`
   }
 `
 
-const BackButton: React.FC<{}> = () => {
+const BackButton: React.FC<any> = () => {
   const history = useHistory()
 
   return (
