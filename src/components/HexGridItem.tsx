@@ -128,11 +128,6 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
             y="30%"
           >
             {article.title}
-            {/* {splitSentence(article.title).map((line, index) => (
-              <tspan x="50%" y={`${25 + index * 8}%`}>
-                {line}
-              </tspan>
-            ))} */}
           </text>
           <image
             href={imagesUrl + article.cover.url}
@@ -140,7 +135,7 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
             y="50%"
             transform="translate(-50, -50)"
           />
-          <CategoryIcon name={article.category.name} />
+          <CategoryIcon iconPath={article.category.icon} />
         </g>
       </svg>
     </HexGridItemDiv>

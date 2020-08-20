@@ -27,6 +27,7 @@ export interface Article {
   title: string
   category: {
     name: string
+    icon: string
   }
 }
 

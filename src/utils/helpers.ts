@@ -25,7 +25,7 @@ export const splitSentence = (sentence: string): string[] => {
   return [sentence]
 }
 
-export const loadImage = (url: string) =>
+export const loadImage = (url: string): Promise<EventTarget> =>
   new Promise((resolve, reject) => {
     const img = new window.Image()
     img.src = `${imagesUrl}${url}`

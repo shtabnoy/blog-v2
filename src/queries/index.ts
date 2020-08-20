@@ -15,6 +15,7 @@ export const GET_ARTICLES = gql`
       }
       category {
         name
+        icon
       }
       created_at
       updated_at
