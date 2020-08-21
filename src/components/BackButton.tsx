@@ -13,19 +13,25 @@ const BackButtonSvg = styled.svg`
   .arrow {
     stroke: #fff;
     stroke-width: 32;
+    transition: all 0.5s;
+    stroke-dasharray: 1100;
+    stroke-dashoffset: 0;
   }
 
   &:hover {
     .arrow {
-      animation: dash 0.5s linear forwards;
-      stroke-dasharray: 1100;
-      stroke-dashoffset: 1100;
+      animation: dash 0.5s 2;
+      animation-timing-function: ease-in-out;
+      animation-direction: alternate;
     }
   }
 
   @keyframes dash {
-    to {
+    0% {
       stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 1100;
     }
   }
 `
