@@ -95,9 +95,10 @@ const HexGridItemDiv = styled.div`
 
 interface HexGridItemProps {
   article: Article
+  setCategory: React.Dispatch<React.SetStateAction<string>>
 }
 
-const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
+const HexGridItem: React.FC<HexGridItemProps> = ({ article, setCategory }) => {
   const history = useHistory()
 
   return (
@@ -135,7 +136,13 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article }) => {
             y="50%"
             transform="translate(-50, -50)"
           />
-          <CategoryIcon iconPath={article.category.icon} />
+          <CategoryIcon
+            iconPath={article.category.icon}
+            onClick={(event: MouseEvent) => {
+              event.stopPropagation()
+              setCategory(article.category.name)
+            }}
+          />
         </g>
       </svg>
     </HexGridItemDiv>

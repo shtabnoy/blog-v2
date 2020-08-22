@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useQuery } from '@apollo/client'
 // import CanvasView from '../components/CanvasView'
 // import SearchIcon from '../components/icons/SearchIcon'
@@ -74,6 +74,7 @@ const Header = styled.header`
 `
 
 const Page = styled.div`
+  min-height: 100%;
   background: linear-gradient(
     to bottom,
     ${theme.main.bgPrimary},
@@ -106,6 +107,7 @@ const HexGridList = styled.div`
 
 const HomePage: React.FC = () => {
   const { loading, error, data } = useQuery(GET_ARTICLES)
+  const [category, setCategory] = useState('')
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
@@ -125,9 +127,18 @@ const HomePage: React.FC = () => {
         articles={articles}
       /> */}
       <HexGridList>
-        {data.articles.map((article: Article) => (
-          <HexGridItem article={article} key={article.id} />
-        ))}
+        {data.articles
+          .filter(
+            (article: Article) =>
+              !category || article.category.name === category
+          )
+          .map((article: Article) => (
+            <HexGridItem
+              article={article}
+              key={article.id}
+              setCategory={setCategory}
+            />
+          ))}
       </HexGridList>
     </Page>
   )

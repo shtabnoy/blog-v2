@@ -24,11 +24,12 @@ const CategoryIconGroup = styled.g`
 
 interface CategoryIconProps {
   iconPath: string
+  onClick: (event: any) => void
 }
 
-const CategoryIcon: React.FC<CategoryIconProps> = ({ iconPath }) => {
+const CategoryIcon: React.FC<CategoryIconProps> = ({ iconPath, onClick }) => {
   return (
-    <CategoryIconGroup>
+    <CategoryIconGroup onClick={onClick}>
       <polygon points="43.3,38 22.1,50.2 1,38 1,13.5 22.1,1.2 43.3,13.5" />
       <path d={iconPath} />
     </CategoryIconGroup>
