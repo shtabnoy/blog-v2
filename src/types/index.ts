@@ -19,17 +19,19 @@ export interface Images {
   [id: string]: HTMLImageElement
 }
 
+export interface Category {
+  id: string
+  name: string
+  icon: string
+}
+
 export interface Article {
   id: string
   cover: {
     url: string
   }
   title: string
-  category: {
-    id: string
-    name: string
-    icon: string
-  }
+  category: Category
 }
 
 export interface Articles {

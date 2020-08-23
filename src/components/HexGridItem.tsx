@@ -1,5 +1,5 @@
 import React from 'react'
-import { Article } from '../types'
+import { Article, Category } from '../types'
 import theme from '../utils/colors'
 import { imagesUrl } from '../utils/helpers'
 import CategoryIcon from './CategoryIcon'
@@ -95,7 +95,7 @@ const HexGridItemDiv = styled.div`
 
 interface HexGridItemProps {
   article: Article
-  setCategory: React.Dispatch<React.SetStateAction<string>>
+  setCategory: React.Dispatch<React.SetStateAction<Category>>
 }
 
 const HexGridItem: React.FC<HexGridItemProps> = ({ article, setCategory }) => {
@@ -141,7 +141,7 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article, setCategory }) => {
             iconPath={article.category.icon}
             onClick={(event: MouseEvent) => {
               event.stopPropagation()
-              setCategory(article.category.id)
+              setCategory(article.category)
             }}
           />
         </g>
