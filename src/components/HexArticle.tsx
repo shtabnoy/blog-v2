@@ -1,11 +1,11 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core'
 import React from 'react'
-import { Spring, animated } from 'react-spring/renderprops-konva'
+// import { Spring, animated } from 'react-spring/renderprops-konva'
 import { Article, Hexagon } from '../types'
-import HexText from './HexText'
-import Hex from './Hex'
-import HexImage from './HexImage'
+// import HexText from './HexText'
+// import Hex from './Hex'
+// import HexImage from './HexImage'
 
 const scaleUp = (event: any) => {
   // TODO: don't trigger on all children elements
@@ -56,27 +56,28 @@ const HexArticle: React.FC<HexArticleProps> = ({
   history,
 }) => {
   return (
-    <Spring key={hexagon.id} from={{ opacity: 0 }} to={{ opacity: 1 }}>
-      {(props: any) => (
-        <animated.Group
-          {...props}
-          x={hexagon.x}
-          y={hexagon.y}
-          key={hexagon.id}
-          onMouseOver={scaleUp}
-          onMouseOut={scaleDown}
-          onClick={() => {
-            history.push(`/articles/${hexagon.id}`)
-          }}
-        >
-          <Hex radius={hexagon.radius} />
-          {article.title && (
-            <HexText text={article.title} hexRadius={hexagon.radius} />
-          )}
-          {image && <HexImage image={image} />}
-        </animated.Group>
-      )}
-    </Spring>
+    <div></div>
+    // <Spring key={hexagon.id} from={{ opacity: 0 }} to={{ opacity: 1 }}>
+    //   {(props: any) => (
+    //     <animated.Group
+    //       {...props}
+    //       x={hexagon.x}
+    //       y={hexagon.y}
+    //       key={hexagon.id}
+    //       onMouseOver={scaleUp}
+    //       onMouseOut={scaleDown}
+    //       onClick={() => {
+    //         history.push(`/articles/${hexagon.id}`)
+    //       }}
+    //     >
+    //       <Hex radius={hexagon.radius} />
+    //       {article.title && (
+    //         <HexText text={article.title} hexRadius={hexagon.radius} />
+    //       )}
+    //       {image && <HexImage image={image} />}
+    //     </animated.Group>
+    //   )}
+    // </Spring>
   )
 }
 

@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useQuery } from '@apollo/client'
 // import CanvasView from '../components/CanvasView'
 // import SearchIcon from '../components/icons/SearchIcon'
 import styled from '@emotion/styled'
 import { GET_ARTICLES } from '../queries'
 import theme from '../utils/colors'
-import HexGridItem from '../components/HexGridItem'
-import { Article } from '../types'
+import HexList from '../components/HexList'
 
 const Header = styled.header`
   top: 0;
@@ -84,30 +83,8 @@ const Page = styled.div`
   color: rgba(255, 255, 255, 0.9);
 `
 
-const HexGridList = styled.div`
-  display: grid;
-  justify-content: center;
-  grid-auto-rows: 100px;
-  grid-template-columns: repeat(2, 160px);
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(3, 160px);
-  }
-  @media (min-width: 800px) {
-    grid-template-columns: repeat(4, 160px);
-  }
-  @media (min-width: 1000px) {
-    grid-template-columns: repeat(5, 160px);
-  }
-  @media (min-width: 1200px) {
-    grid-template-columns: repeat(6, 160px);
-  }
-  grid-gap: 10px 26px;
-  padding-top: 120px;
-`
-
 const HomePage: React.FC = () => {
   const { loading, error, data } = useQuery(GET_ARTICLES)
-  const [category, setCategory] = useState('')
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
@@ -126,20 +103,7 @@ const HomePage: React.FC = () => {
         // TODO: proper handling of articles; not only with an svg cover
         articles={articles}
       /> */}
-      <HexGridList>
-        {data.articles
-          .filter(
-            (article: Article) =>
-              !category || article.category.name === category
-          )
-          .map((article: Article) => (
-            <HexGridItem
-              article={article}
-              key={article.id}
-              setCategory={setCategory}
-            />
-          ))}
-      </HexGridList>
+      <HexList articles={data.articles} />
     </Page>
   )
 }

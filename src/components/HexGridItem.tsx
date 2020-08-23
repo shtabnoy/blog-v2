@@ -103,6 +103,7 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article, setCategory }) => {
 
   return (
     <HexGridItemDiv
+      className={`hex-grid-item hex-category-${article.category.id}`}
       onClick={() => {
         history.push(`/articles/${article.id}`)
       }}
@@ -140,7 +141,7 @@ const HexGridItem: React.FC<HexGridItemProps> = ({ article, setCategory }) => {
             iconPath={article.category.icon}
             onClick={(event: MouseEvent) => {
               event.stopPropagation()
-              setCategory(article.category.name)
+              setCategory(article.category.id)
             }}
           />
         </g>
